@@ -1,0 +1,47 @@
+2017-12-25 13:31
+long_hold: |ZN_03|ZN_02|I_01|J_03|JM_01|JM_02|CU_01|NI_01|PP_01|PP_02|IH_01|IH_02
+long_entry: 
+long_exit: |RB_01|RM_01|RB_03|CS_03
+short_hold: |T_02|JD_03|M_01|TA_03|BU_01|TA_02|IC_02|IF_03|IF_01|HC_01
+short_entry: |HC_01
+short_exit: 
+
+2017-12-25 14:02
+long_hold: |ZN_03|ZN_02|I_01|J_03|JM_02|CU_01|NI_01|PP_01|PP_02|IH_01|IH_02|CS_03|SF_03
+long_entry: |CS_03|SF_03
+long_exit: |JM_01
+short_hold: |T_02|JD_03|M_01|TA_03|BU_01|TA_02|IC_02|IF_03|IF_01|HC_01|L_03
+short_entry: |L_03
+short_exit: 
+
+2017-12-25 14:17
+long_hold: |ZN_03|ZN_02|JM_02|CU_01|NI_01|PP_02|IH_01|IH_02|MA_03
+long_entry: |MA_03
+long_exit: |I_01|PP_01|J_03|CS_03|SF_03
+short_hold: |T_02|JD_03|M_01|TA_03|BU_01|TA_02|IC_02|IF_03|IF_01|HC_01|L_03|RB_01|V_01
+short_entry: |RB_01|V_01
+short_exit: 
+
+2017-12-25 14:22
+long_hold: |ZN_03|ZN_02|JM_02|CU_01|NI_01|PP_02|IH_01|IH_02|MA_03
+long_entry: 
+long_exit: 
+short_hold: |T_02|JD_03|M_01|TA_03|BU_01|TA_02|IC_02|IF_03|IF_01|HC_01|L_03|RB_01|V_01
+short_entry: 
+short_exit: 
+
+2017-12-25 14:24
+long_hold: |ZN_03|ZN_02|JM_02|CU_01|NI_01|PP_02|IH_01|IH_02|MA_03|CS_03
+long_entry: |CS_03
+long_exit: 
+short_hold: |T_02|JD_03|M_01|TA_03|BU_01|TA_02|IC_02|IF_03|IF_01|HC_01|L_03|RB_01|V_01|J_01
+short_entry: |J_01
+short_exit: 
+
+2017-12-25 14:36
+long_hold: |ZN_03|ZN_02|JM_02|CU_01|PP_02|IH_01|IH_02|MA_03
+long_entry: 
+long_exit: |NI_01|CS_03
+short_hold: |T_02|JD_03|M_01|TA_03|BU_01|TA_02|IC_02|IF_03|IF_01|HC_01|L_03|RB_01|V_01|J_01
+short_entry: 
+short_exit: 
