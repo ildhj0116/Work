@@ -3,8 +3,6 @@
 import pprint
 import time
 import math  
-import pandas as pd
-import numpy as np
 from WindPy import w 
 w.start()
 
@@ -12,15 +10,15 @@ mstock=[[1,2,3,6],[2,3,6,9],[3,4,6,9],[4,5,6,9],[5,6,9,12],[6,7,9,12],
         [7,8,9,12],[3,8,9,12],[3,9,10,12],[3,10,11,12],[3,6,11,12],[1,3,6,12]]
 commodities={
 'DCE':['A','C','CS','M','Y','P','JD','L','PP','V','J','JM','I'],
-'CZC':['CF','SR','OI','RM','TA','FG','MA','ZC'],
+'CZC':['CF','SR','OI','RM','TA','FG','MA','ZC','SF'],
 'SHF':['CU','ZN','AL','NI','AU','AG','BU','RU','HC','RB'],
 'CFE':['IC','IH','IF','T','TF'],
 'ALL':['A','C','CS','M','Y','P','JD','L','PP','V','J','JM','I',
-       'CF','SR','OI','RM','TA','FG','MA','ZC','CU','ZN','AL',
-       'NI','AU','AG','BU','RU','HC','RB','IC','IH','IF','T','TF']}
+       'CF','SR','OI','RM','TA','FG','MA','ZC','SF','CU','ZN','AL',
+       'NI','AU','AG','SN','BU','RU','HC','RB','IC','IH','IF','T','TF']}
 # total 37 commodities, ignore commodities which are small turnover 
 month159=['A','C','CS','M','Y','P','JD','L','PP','V','J','JM','I',
-            'CF','SR','OI','RM','TA','FG','MA','ZC','NI','RU']
+            'CF','SR','OI','RM','TA','FG','MA','ZC','SF','NI','RU']
 month1510=['RB','HC']
 month6912=['BU']
 month612=['AG','AU']
@@ -97,7 +95,7 @@ def mstockindex(c,m,y,e):
 ## classification 
 agri_cmt=['A','C','CS','M','Y','P','JD','CF','SR','OI','RM']
 chem_cmt=['L','PP','V','TA','MA','BU','RU']
-fmt_cmt=['RB','I','HC','J','JM','ZC','FG']
+fmt_cmt=['RB','I','HC','J','JM','ZC','FG','SF']
 nfmt_cmt=['CU','NI','AL','ZN','SN']
 gld_cmt=['AU','AG']
 index_cmt=['IC','IH','IF','T','TF']
@@ -133,8 +131,8 @@ def generate_cnt(month_,year_):
                 dic[j]=m36912(j,month_,year_,i)
             elif j in nfmental:
                 dic[j]=mnfmental(j,month_,year_,i)
-            #else:
-                #dic[j]=mstockindex(j,month_,year_,i)
+            else:
+                dic[j]=mstockindex(j,month_,year_,i)
     return dic
                   
 def main_contracts(testday,top=2):
@@ -151,19 +149,22 @@ def main_contracts(testday,top=2):
         vol=w.wsd(cntlist,'volume',testday,testday).Data[0]
         vol=[0 if math.isnan(i) else i for i in vol] # assume only one NAN at most 
         x[key]=dict(zip(cntlist,vol)) 
-        
     for key in x:
         _sort=sorted(x[key].values(),reverse=True)
         rn=[]
         for i in range(top):
-            if _sort[i]!=0:
+            try:
                 rn.append(list(x[key].keys())[list(x[key].values()).index(_sort[i])])
-            else:
-                rn.append(np.NaN)
+            except:
+                continue
         result[key]=rn
     return result
         
-
+if __name__ == "__main__":
+    d=main_contracts('2017-9-11',2)
+    #d=dd.generate_cnt()
+    pprint.pprint(d)
+    #pprint.pprint(generate_cnt())
     
     
     

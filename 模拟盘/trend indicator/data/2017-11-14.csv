@@ -1,0 +1,25 @@
+,Level,FC,KDJ,Contango,hm_up,Seasonal,LastLevel
+FG801,long_1,null,null,-6.6%,h5>h60,75%,long_1
+HC1801,long_1,null,null,-2.0%,h5>h60,67%,long_1
+SR801,long_1,null,gold cross,0.2%,h5>h60,64%,long_1
+ZC801,long_1,null,null,-9.3%,h5>h60,50%,long_1
+M1801,long_1,null,null,-4.4%,h5>h60,41%,long_1
+MA801,long_1,null,null,-2.5%,h5>h60,40%,long_1
+TA801,long_1,null,null,0.7%,h5>h60,40%,long_1
+RB1805,long_1,null,null,-8.4%,h5>h60,38%,long_1
+BU1712,long_1,null,null,8.1%,h5>h60,33%,long_1
+I1801,long_1,null,null,-5.2%,h5>h60|today,33%,long_1
+J1801,long_1,null,null,-0.1%,null,33%,null
+PP1801,long_1,null,death cross,2.2%,h5>h60,33%,long_1
+CS1801,long_1,null,null,-9.4%,h5>h60,100%,long_1
+JD1801,long_1,null,death cross,null,h5>h60,100%,long_1
+ZN1801,long_2,null,null,-0.9%,h5>h60|today,50%,null
+CU1801,long_2,m10,null,-0.2%,h5>h60|today,43%,long_2
+OI801,short_1,null,null,-1.4%,h5<h60,70%,short_1
+Y1801,short_1,null,null,0.5%,h5<h60,64%,short_1
+A1801,short_1,null,null,-2.2%,h5<h60|today,59%,short_1
+AL1801,short_1,null,null,1.6%,h5<h60,57%,short_1
+CF801,short_1,null,null,-5.5%,h5<h60|today,54%,null
+AG1712,short_1,null,null,null,h5<h60,53%,short_1
+AU1712,short_1,null,null,null,h5<h60|today,53%,short_1
+V1801,short_1,null,null,null,h5<h60,50%,short_1

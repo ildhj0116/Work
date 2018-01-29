@@ -1,0 +1,19 @@
+,Level,KDJ,Contango,hm_up,Seasonal,LastLevel
+SR801,long_1,null,-4.5%,h5>h60,91%,null
+JD1801,long_1,null,null,h5>h60,67%,long_1
+P1801,long_1,null,-1.2%,h5>h60,56%,long_2
+FG801,long_1,null,-6.4%,h5>h60,50%,null
+RM801,long_1,null,-4.9%,h5>h60,50%,long_1
+ZN1712,long_1,null,-4.1%,null,50%,long_1
+CU1712,long_1,null,2.9%,h5>h60,43%,long_1
+NI1801,long_1,null,5.6%,h5>h60,42%,long_1
+M1801,long_1,null,-1.7%,h5>h60,41%,long_1
+HC1801,long_1,null,2.7%,h5>h60,33%,null
+PP1801,long_1,null,2.2%,h5>h60,33%,null
+MA801,short_1,null,-4.5%,null,60%,short_1
+AL1712,short_1,null,1.9%,h5<h60|today,57%,null
+CS1801,short_1,null,-11.3%,h5<h60,50%,short_1
+C1801,short_1,gold cross,-0.4%,h5<h60,42%,short_1
+A1801,short_1,null,4.1%,h5<h60,41%,short_1
+V1801,short_1,null,null,h5<h60,38%,short_1
+BU1712,short_1,null,6.0%,h5<h60|today,33%,null

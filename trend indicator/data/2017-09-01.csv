@@ -1,0 +1,23 @@
+,Trend Level,KDJ,Seasonal,Last Trend,Last KDJ
+AU1712,long_1,top deviate,65%,null,null
+CU1710,long_1,bottom deviate,64%,long_1,null
+MA801,long_1,null,60%,long_1,null
+ZC801,long_1,null,50%,long_1,bottom deviate
+L1801,long_1,null,44%,long_1,null
+V1801,long_1,null,38%,long_1,null
+NI1801,long_1,top deviate,33%,long_1,top deviate
+TA801,long_1,null,33%,long_1,null
+AL1710,long_1,gold cross,25%,long_1,top deviate
+RB1801,long_1,null,13%,long_1,gold cross
+HC1801,long_1,null,0%,long_1,null
+PP1801,long_1,null,0%,long_1,null
+RU1801,long_2,top deviate,53%,null,null
+JM1801,long_2,top deviate,50%,long_3,top deviate
+ZN1710,long_2,top deviate,50%,long_3,null
+I1801,long_2,top deviate,33%,long_2,top deviate
+OI801,long_2,top deviate,30%,null,null
+BU1712,long_3,top deviate,0%,null,null
+FG801,long_3,null,0%,long_3,null
+JD1801,long_3,null,0%,long_3,null
+M1801,short_1,top deviate,53%,short_1,null
+RM801,short_1,top deviate,25%,short_1,death cross

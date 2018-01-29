@@ -1,0 +1,20 @@
+,Level,KDJ,Contango,hm_up,Seasonal,LastLevel
+JD1801,long_1,null,null,h5>h60,67%,多头_1
+ZN1712,long_1,null,-3.8%,null,50%,多头_1
+CU1712,long_1,null,-0.4%,h5>h60,43%,null
+P1801,long_2,null,-2.2%,h5>h60|today,67%,null
+Y1801,short_1,gold cross,1.5%,h5<h60,64%,空头_1
+MA801,short_1,null,-3.4%,h5<h60,60%,空头_1
+AL1712,short_1,gold cross,1.0%,h5<h60,57%,空头_1
+TA801,short_1,null,-0.2%,h5<h60,56%,空头_1
+RU1801,short_1,null,18.0%,h5<h60,53%,空头_1
+C1801,short_1,null,-0.5%,h5<h60,50%,空头_1
+CS1801,short_1,null,-11.4%,h5<h60,50%,空头_1
+ZC801,short_1,null,-14.5%,h5<h60,50%,空头_1
+CF801,short_1,null,-6.0%,h5<h60,46%,空头_1
+A1801,short_1,null,6.1%,h5<h60|today,41%,null
+AU1712,short_1,null,null,h5<h60|today,41%,空头_1
+I1801,short_1,null,-13.5%,h5<h60,33%,空头_1
+J1801,short_1,null,-20.3%,h5<h60,33%,空头_1
+PP1801,short_1,null,0.5%,h5<h60,33%,空头_1
+V1801,short_1,null,null,h5<h60,25%,空头_1
