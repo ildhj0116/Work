@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Jan 29 08:40:38 2018
+Created on Mon Jan 29 16:58:47 2018
 
 @author: Administrator
 """
@@ -12,8 +12,29 @@ import copy
 
 w.start()
 
-def Main_Contract(cmt_list, start_date, end_date, decide_param = 2):
+def OI_Construct(main_cnt_df):
+    date_list = main_cnt_df.index
+    for cmt in main_cnt_df.columns:
+        cnt_series = main_cnt_df[cmt]
+        unique_cnt_list = cnt_series.unique()
+        for cnt in unique_cnt_list:
+            part_cnt = cnt_series[cnt_series==cnt]
+            start_date = part_cnt.index[0]
+            end_date = part_cnt.index[-1]
+            tmp_oi_data = w.wset("futureoir","startdate="+start_date+";enddate="+end_date+\
+                                 "varity="+cmt+";wind_code="+cnt+";order_by=long;ranks=all;field=date,ranks,"+\
+                                 "member_name,long_position,short_position,vol")
+            
+            tmp_oi_data = pd.DataFrame(tmp_oi_data.Data, index=tmp_oi_data.Fields).T
+            
+            
+    
+if __name__ == "__main__":
+    main_cnt_df = pd.read_csv("main_cnt.csv",index_col=0)
+    OI_Construct(main_cnt_df)
 
+    
+    """
     main_cnt_series_list = []    
     for cmt in cmt_list:
         #持仓量矩阵
@@ -79,6 +100,6 @@ def Main_Contract(cmt_list, start_date, end_date, decide_param = 2):
         main_cnt_series_list.append(filter_main_cnt)
     main_cnt_df = pd.concat(main_cnt_series_list,axis=1)
     return main_cnt_df
+    """
     
     
-   
