@@ -17,7 +17,7 @@ def Main_Contract(cmt_list, start_date, end_date, decide_param = 2):
     main_cnt_series_list = []    
     for cmt in cmt_list:
         #持仓量矩阵
-        cmt_data = w.wset("futurecc","wind_code="+cmt)
+        cmt_data = w.wset("futurecc","startdate="+start_date+";enddate="+end_date+";wind_code="+cmt)
         cnt_data = pd.DataFrame(data=cmt_data.Data,index=cmt_data.Fields).T
         if datetime.strptime(start_date,"%Y-%m-%d") < cnt_data["contract_issue_date"].iloc[0]:
             base_date = cnt_data["contract_issue_date"].iloc[0]+timedelta(days=1)

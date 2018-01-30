@@ -11,27 +11,42 @@ from datetime import datetime,timedelta
 import copy
 
 w.start()
+def exchange_of_cmt(cmt):
+    return cmt[-3:]
 
 def OI_Construct(main_cnt_df):
-    date_list = main_cnt_df.index
+    all_cmt_oi_list = []
     for cmt in main_cnt_df.columns:
         cnt_series = main_cnt_df[cmt]
         unique_cnt_list = cnt_series.unique()
+        exchange = exchange_of_cmt(cmt)
+        oi_df_list = []
         for cnt in unique_cnt_list:
             part_cnt = cnt_series[cnt_series==cnt]
-            start_date = part_cnt.index[0]
-            end_date = part_cnt.index[-1]
-            tmp_oi_data = w.wset("futureoir","startdate="+start_date+";enddate="+end_date+\
-                                 "varity="+cmt+";wind_code="+cnt+";order_by=long;ranks=all;field=date,ranks,"+\
-                                 "member_name,long_position,short_position,vol")
-            
-            tmp_oi_data = pd.DataFrame(tmp_oi_data.Data, index=tmp_oi_data.Fields).T
-            
+            tmp_start_date = part_cnt.index[0]
+            tmp_end_date = part_cnt.index[-1]
+            if exchange=='DCE':
+                tmp_oi_data = w.wset("futureoir","startdate="+tmp_start_date+";enddate="+tmp_end_date+\
+                                     "varity="+cmt+";wind_code="+cnt+";order_by=long;ranks=all;field=date,"+\
+                                     "member_name,long_position,short_position,vol")
+                
+                tmp_oi_data = pd.DataFrame(tmp_oi_data.Data, index=tmp_oi_data.Fields).T
+                tmp_oi_data.set_index(["date","member_name"],inplace=True)
+            #else:
+            oi_df_list.append(tmp_oi_data)
+        single_cmt_oi_data = pd.concat(oi_df_list)
+        single_cmt_oi_data.columns = pd.MultiIndex.from_product([[cmt],single_cmt_oi_data.columns])
+        all_cmt_oi_list.append(single_cmt_oi_data)    
             
     
 if __name__ == "__main__":
     main_cnt_df = pd.read_csv("main_cnt.csv",index_col=0)
-    OI_Construct(main_cnt_df)
+    main_cnt_df["date"] = [datetime.strptime(x,"%Y-%m-%d") for x in main_cnt_df.index]
+    start_date = datetime.strptime("2015-12-31","%Y-%m-%d")
+    end_date = datetime.strptime("2018-1-25","%Y-%m-%d")
+    main_cnt_target = main_cnt_df[(main_cnt_df["date"]>start_date) & (main_cnt_df["date"]<end_date)]
+    main_cnt_target.drop("date",axis=1,inplace=True)
+    OI_Construct(main_cnt_target)
 
     
     """

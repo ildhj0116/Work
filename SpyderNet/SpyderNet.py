@@ -35,11 +35,10 @@ if __name__ == "__main__":
     base_date = "2009-12-31"
     end_date = "2018-01-17"    
     cmt_list = [exchange(x) for x in cnt_list]
-    main_cnt_df = Main_Contract(["A.DCE"],base_date,end_date)
-    """
+
     main_cnt_df = Main_Contract(cmt_list,base_date,end_date)
     main_cnt_df.to_csv("main_cnt.csv")
-    """
+
     
     
     

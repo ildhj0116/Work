@@ -18,7 +18,7 @@ import numpy as np
 
 if __name__ == "__main__":
     ## 制作合约列表
-    date = '2018-01-26'
+    date = '2018-01-30'
     
     top = 2
     d=main_contracts(date,2)
