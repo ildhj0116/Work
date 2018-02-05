@@ -36,7 +36,8 @@ def OI_Construct(main_cnt_df):
             if exchange=='DCE':
                 tmp_oi_data = w.wset("futureoir","startdate="+tmp_start_date+";enddate="+tmp_end_date+\
                                      "varity="+cmt+";wind_code="+cnt+";order_by=long;ranks=all;field=date,"+\
-                                     "member_name,long_position,short_position,vol")
+                                     "member_name,long_position,long_position_increase,short_position,"+\
+                                     "short_position_increase,vol")
                 
                 tmp_oi_data = pd.DataFrame(tmp_oi_data.Data, index=tmp_oi_data.Fields).T
                 #tmp_oi_data.set_index(["date","member_name"],inplace=True)
@@ -48,11 +49,11 @@ def OI_Construct(main_cnt_df):
             else:
                 tmp_long_data = w.wset("futureoir","startdate="+tmp_start_date+";enddate="+tmp_end_date+\
                                      "varity="+cmt+";wind_code="+cnt+";order_by=long;ranks=all;field=date,"+\
-                                     "member_name,long_position")
+                                     "member_name,long_position,long_position_increase")
                 tmp_long_data = pd.DataFrame(tmp_long_data.Data, index=tmp_long_data.Fields).T
                 tmp_short_data = w.wset("futureoir","startdate="+tmp_start_date+";enddate="+tmp_end_date+\
                                      "varity="+cmt+";wind_code="+cnt+";order_by=short;ranks=all;field=date,"+\
-                                     "member_name,short_position")   
+                                     "member_name,short_position,short_position_increase")   
                 tmp_short_data = pd.DataFrame(tmp_short_data.Data, index=tmp_short_data.Fields).T
 
                 tmp_vol_data = w.wset("futurevir","startdate="+tmp_start_date+";enddate="+tmp_end_date+\
@@ -83,9 +84,9 @@ def OI_Construct(main_cnt_df):
             
     
 if __name__ == "__main__":
-    main_cnt_df = pd.read_csv("main_cnt_without_DCE.csv",index_col=0)
+    main_cnt_df = pd.read_csv("main_cnt_DCE.csv",index_col=0)
     main_cnt_df["date"] = [datetime.strptime(x,"%Y/%m/%d") for x in main_cnt_df.index]
-    start_date = datetime.strptime("2016-12-31","%Y-%m-%d")
+    start_date = datetime.strptime("2010-12-31","%Y-%m-%d")
     end_date = datetime.strptime("2018-1-25","%Y-%m-%d")
     main_cnt_target = main_cnt_df[(main_cnt_df["date"]>start_date) & (main_cnt_df["date"]<end_date)].copy()
     main_cnt_target.drop("date",axis=1,inplace=True)
