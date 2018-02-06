@@ -21,7 +21,7 @@ cnt_list_str = "MA805.CZC,C1805.DCE,ZC805.CZC,A1805.DCE,RU1805.SHF,J1805.DCE,RB1
 cnt_list = cnt_list_str.split(',')
 long_list = "MA805.CZC,C1805.DCE,ZC805.CZC,A1805.DCE,RU1805.SHF".split(",")
 short_list = "J1805.DCE,RB1805.SHF,Y1805.DCE,BU1806.SHF,JM1805.DCE".split(",")
-cnt_size = [7,21,11,11,1,-1,-12,-8,-16,-3]
+cnt_size = [12,18,10,9,1,-1,-7,-9,-18,-3]
 cnt_data = w.wss(cnt_list_str, "contractmultiplier")
 cnt_data = pd.DataFrame(cnt_data.Data,columns=cnt_data.Codes,index=cnt_data.Fields).T
 cnt_data["size"] = cnt_size
@@ -29,8 +29,8 @@ cnt_data["size"] = cnt_size
 
 #设置起止时间
 
-start_time = "2018-02-02 11:29:00"
-end_time = "2018-02-05 15:00:00"
+start_time = "2018-02-06 10:16:00"
+end_time = "2018-02-06 12:00:00"
 
 #提取分钟数据
 minute_data = w.wsi(cnt_list_str, "close", start_time, end_time, "")
@@ -72,7 +72,7 @@ x = x.to_pydatetime()
 x = np.vectorize(lambda s: s.strftime('%m-%d %H:%M'))(x)
 y = all_ratio.tolist()
 #设置横坐标显示和标题
-xticks = range(0,len(x),50)
+xticks = range(0,len(x),80)
 xlabels = [x[index] for index in xticks]
 xticks.append(len(x))
 xlabels.append(x[-1])

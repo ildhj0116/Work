@@ -25,8 +25,8 @@ def Main_Contract(cmt_list, start_date, end_date, decide_param = 2):
             base_date = start_date
         effective_cnt = copy.deepcopy(cnt_data)
         effective_cnt.set_index('wind_code',inplace=True)
-        
-        cnt_list = ",".join(list(effective_cnt.index))
+        cnt_all_list = list(effective_cnt.index)
+        cnt_list = ",".join(cnt_all_list)
         oi_data = w.wsd(cnt_list, "oi",base_date,end_date,"")
         oi_data = pd.DataFrame(data=oi_data.Data,index=oi_data.Codes,columns=oi_data.Times).T.fillna(0)
         
@@ -68,7 +68,7 @@ def Main_Contract(cmt_list, start_date, end_date, decide_param = 2):
                     decide_day += 1
                     if decide_day>=decide_param:
                         decide_flag = False
-                        back_cnt_list.append(original_cnt)
+                        back_cnt_list = cnt_all_list[:(cnt_all_list.index(sub_cnt))]
                 elif main_cnt_list[t]==original_cnt:
                     decide_flag = False
                     sub_cnt = main_cnt_list[t]
