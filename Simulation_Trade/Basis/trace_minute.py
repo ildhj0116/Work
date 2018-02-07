@@ -29,8 +29,8 @@ cnt_data["size"] = cnt_size
 
 #设置起止时间
 
-start_time = "2018-02-06 10:16:00"
-end_time = "2018-02-06 12:00:00"
+start_time = "2018-02-07 10:14:00"
+end_time = "2018-02-07 15:00:00"
 
 #提取分钟数据
 minute_data = w.wsi(cnt_list_str, "close", start_time, end_time, "")
