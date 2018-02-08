@@ -5,62 +5,66 @@ Created on Mon Feb 05 13:34:00 2018
 @author: 李弘一萌
 """
 import pandas as pd
+import numpy as np
 from WindPy import w
 w.start() 
 
 
-def signal_spyder_for_index(all_df):
-    cmt_list =all_df.columns.tolist()
-    target_cmt_list = cmt_list
-    cmt_ITS_series_list = []
-    cmt_UTS_series_list = []
+def signal_spyder_for_index(cmt_oi_series,total_vol_oi_df):    
+    cmt_oi_series.dropna(inplace=True)
+    cmt_ITS_list = []
+    cmt_UTS_list = []
+    cmt_IT_B_list = []
+    cmt_IT_S_list = []
+    cmt_UT_B_list = []
+    cmt_UT_S_list = []
     
-    for cmt in target_cmt_list:
-        if cmt not in cmt_list:
-            print cmt+"不存在"
-            continue
-        else:
-            cmt_oi_series = all_df[cmt].copy()
-            cmt_oi_series.dropna(inplace=True)
-            cmt_ITS_list = []
-            cmt_UTS_list = []
-            for i in range(len(cmt_oi_series)):
-                tmp_oi_df = cmt_oi_series[i]
-                if len(tmp_oi_df)<=2:
-                    ITS=0
-                    UTS=0
-                else:                    
-                    tmp_oi_df["Stat"] = (tmp_oi_df["long_position"]+tmp_oi_df["short_position"])/tmp_oi_df["vol"]
-                    total_oi = tmp_oi_df.drop("date",axis=1).sum()
-                    total_stat = (total_oi.loc["long_position"]+total_oi.loc["short_position"])/total_oi.loc["vol"]
-                    informed_trader = tmp_oi_df[tmp_oi_df["Stat"]>=total_stat]
-                    uninformed_trader = tmp_oi_df[tmp_oi_df["Stat"]<total_stat]
-                    IT_B = informed_trader["long_position"].sum()
-                    IT_S = informed_trader["short_position"].sum()                    
-                    UT_B = uninformed_trader["long_position"].sum()
-                    UT_S = uninformed_trader["short_position"].sum()
-                    if ((IT_B+IT_S)==0) or ((UT_B+UT_S)==0):
-                        ITS = 0
-                        UTS = 0
-                    else:
-                        ITS = (IT_B-IT_S)/(IT_B+IT_S)
-                        UTS = (UT_B-UT_S)/(UT_B+UT_S)
-                cmt_ITS_list.append(ITS)
-                cmt_UTS_list.append(UTS)
-            cmt_ITS_series = pd.Series(cmt_ITS_list,index=cmt_oi_series.index,name=cmt)
-            cmt_UTS_series = pd.Series(cmt_UTS_list,index=cmt_oi_series.index,name=cmt)
-            cmt_ITS_series_list.append(cmt_ITS_series)
-            cmt_UTS_series_list.append(cmt_UTS_series)
-    
-    cmt_ITS_df = pd.concat(cmt_ITS_series_list,axis=1) 
-    cmt_UTS_df = pd.concat(cmt_UTS_series_list,axis=1) 
-    cmt_ITS_signal_df = pd.DataFrame(0,index=cmt_ITS_df.index,columns=cmt_ITS_df.columns)
-    cmt_ITS_signal_df[cmt_ITS_df>0]= 1
-    cmt_ITS_signal_df[cmt_ITS_df<0]= -1
-    cmt_UTS_signal_df = pd.DataFrame(0,index=cmt_UTS_df.index,columns=cmt_UTS_df.columns)
-    cmt_UTS_signal_df[cmt_UTS_df>0]= -1
-    cmt_UTS_signal_df[cmt_UTS_df<0]= 1
-    return cmt_ITS_signal_df, cmt_UTS_signal_df
+    for i in range(len(cmt_oi_series)):
+        tmp_oi_df = cmt_oi_series[i]
+        if len(tmp_oi_df)<=2:
+            ITS=0
+            UTS=0
+            IT_B = np.nan
+            IT_S = np.nan                
+            UT_B = np.nan
+            UT_S = np.nan
+        else:                    
+            tmp_oi_df["Stat"] = (tmp_oi_df["long_position"]+tmp_oi_df["short_position"])/tmp_oi_df["vol"]                        
+            total_oi_vol = total_vol_oi_df.iloc[i,:]
+            total_stat = total_oi_vol.loc["OI"] / total_oi_vol.loc["VOLUME"]
+            informed_trader = tmp_oi_df[tmp_oi_df["Stat"]>=total_stat]
+            uninformed_trader = tmp_oi_df[tmp_oi_df["Stat"]<total_stat]
+            IT_B = informed_trader["long_position"].sum()
+            IT_S = informed_trader["short_position"].sum()                    
+            UT_B = uninformed_trader["long_position"].sum()
+            UT_S = uninformed_trader["short_position"].sum()
+            if ((IT_B+IT_S)==0) or ((UT_B+UT_S)==0):
+                ITS = 0
+                UTS = 0
+            else:
+                ITS = (IT_B-IT_S)/(IT_B+IT_S)
+                UTS = (UT_B-UT_S)/(UT_B+UT_S)
+        cmt_IT_B_list.append(IT_B)
+        cmt_IT_S_list.append(IT_S)
+        cmt_UT_B_list.append(UT_B)
+        cmt_UT_S_list.append(UT_S)
+        cmt_ITS_list.append(ITS)
+        cmt_UTS_list.append(UTS)
+        
+    cmt_ITS_series = pd.Series(cmt_ITS_list,index=cmt_oi_series.index,name=cmt)
+    cmt_UTS_series = pd.Series(cmt_UTS_list,index=cmt_oi_series.index,name=cmt)
+
+    cmt_ITS_signal_series = pd.Series(0,index=cmt_ITS_series.index,name=cmt+"_ITS_signal")
+    cmt_ITS_signal_series[cmt_ITS_series>0]= 1
+    cmt_ITS_signal_series[cmt_ITS_series<0]= -1
+    cmt_UTS_signal_series = pd.Series(0,index=cmt_UTS_series.index,name=cmt+"_UTS_signal")
+    cmt_UTS_signal_series[cmt_UTS_series>0]= -1
+    cmt_UTS_signal_series[cmt_UTS_series<0]= 1
+    tmp_total_table = pd.DataFrame([cmt_IT_B_list,cmt_IT_S_list,cmt_ITS_list,cmt_UT_B_list,\
+                                cmt_UT_S_list,cmt_UTS_list],index=["IT_B","IT_S","ITS","UT_B",\
+                                "UT_S","UTS"], columns=cmt_oi_series.index).T
+    total_table = pd.concat([tmp_total_table,cmt_ITS_signal_series,cmt_UTS_signal_series],axis=1)
+    return cmt_ITS_signal_series, cmt_UTS_signal_series, total_table
 
 
 def MainCnt_trade_start_end(cnt_series):
@@ -78,7 +82,8 @@ def Bktest(signal,open_price,close_price):
     signal.name = "signal"
     open_price.name = "open"
     close_price.name = "close"
-    table = pd.concat([signal,open_price,close_price],axis=1).dropna(inplace=True)
+    table = pd.concat([signal,open_price,close_price],axis=1)
+    table.dropna(inplace=True)
     original_ret = table["close"] / table["open"] - 1
     strat_ret = original_ret * table["signal"]
     strat_ret.name = "ret"
@@ -91,7 +96,7 @@ def Bktest(signal,open_price,close_price):
     
 def SpyderNet_Bktest(signal,main_cnt_list,start_date,end_date):
     open_list = main_cnt_list.shift(1)
-    close_list = main_cnt_list.shift(2)
+    close_list = main_cnt_list.shift(1)
     open_trade_date_table = MainCnt_trade_start_end(open_list)
     close_trade_date_table = MainCnt_trade_start_end(close_list)
     cnt_unique = open_list.dropna().unique()
@@ -118,11 +123,9 @@ def SpyderNet_Bktest(signal,main_cnt_list,start_date,end_date):
     signal_and_cnt = pd.concat([signal,main_cnt_list],axis=1)
     signal_and_cnt.dropna(inplace=True)
     signal_and_price_table = pd.concat([signal_and_cnt,price_table],axis=1)
-    original_ret = signal_and_price_table["close"] / signal_and_price_table["open"].shift(1) - 1
-    strat_ret = (original_ret.dropna()) * (signal_and_price_table["signal"].shift(2).dropna())
-    # 回测函数框架？
-    ret_equity = Bktest(signal_and_price_table["signal"].shift(2),)
-    return equity
+
+    ret_equity = Bktest(signal_and_price_table["signal"].shift(1),signal_and_price_table["open"],signal_and_price_table["close"])
+    return ret_equity
     
     
     
@@ -138,25 +141,34 @@ def SpyderNet_Bktest(signal,main_cnt_list,start_date,end_date):
 if __name__ =="__main__":
     main_cnt_df = pd.read_csv("main_cnt_revised.csv",parse_dates=[0],index_col=0)
     ###########################################################################
-    
-#    all_df = pd.read_pickle("OI.tmp")
-#    ITS_signal,UTS_signal = signal_spyder_for_index(all_df)
-#    ITS_signal.to_csv("signals\ITS_signals.csv")
-#    UTS_signal.to_csv("signals\UTS_signals.csv")
-
-    #测试下一个模块
-    ITS_signal = pd.read_csv("signals\ITS_signals.csv",parse_dates=[0],index_col=0)
-    UTS_signal = pd.read_csv("signals\UTS_signals.csv",parse_dates=[0],index_col=0)
-    ###########################################################################
+    #测试下一个模块   
     #cmt_list = main_cnt_df.columns.tolist()
-    cmt_list = ["CS.DCE"]
-    for cmt in cmt_list:
-        if cmt not in ITS_signal.columns:
-            continue
-        else:
-            equity = SpyderNet_Bktest(ITS_signal[cmt],main_cnt_df[cmt],1,1)
+    cmt_list = ["IF.CFE"]
     
-
+    
+    ITS_signal_list = []
+    UTS_signal_list = []
+    for cmt in cmt_list:
+        cmt_oi = pd.read_pickle("OI_Data\OI_" + cmt[:-4] +".tmp")
+        total_vol_oi_df = pd.read_csv("OI_Data\OI_total_"+ cmt[:-4] +".csv",parse_dates=[0],index_col=0)
+        ITS_signal,UTS_signal,total_table= signal_spyder_for_index(cmt_oi,total_vol_oi_df)
+        ITS_signal_list.append(ITS_signal)
+        UTS_signal_list.append(UTS_signal)
+    ITS_signal_df = pd.concat(ITS_signal_list,axis=1)
+    UTS_signal_df = pd.concat(UTS_signal_list,axis=1)
+    ITS_signal_df.to_csv("signals\ITS_signals.csv")
+    UTS_signal_df.to_csv("signals\UTS_signals.csv")
+    
+    ###########################################################################
+    
+    """
+    ITS_signal_df = pd.read_csv("signals\ITS_signals.csv",parse_dates=[0],index_col=0)
+    UTS_signal_df = pd.read_csv("signals\UTS_signals.csv",parse_dates=[0],index_col=0)
+    """
+    for cmt in cmt_list:
+        equity = SpyderNet_Bktest(ITS_signal_df[cmt+"_ITS_signal"],main_cnt_df[cmt],1,1)
+        equity["equity"].plot()
+    
 
 
 
