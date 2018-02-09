@@ -21,6 +21,7 @@ def signal_spyder_for_index(cmt_oi_series,total_vol_oi_df):
     
     for i in range(len(cmt_oi_series)):
         tmp_oi_df = cmt_oi_series[i]
+        
         if len(tmp_oi_df)<=2:
             ITS=0
             UTS=0
@@ -28,9 +29,13 @@ def signal_spyder_for_index(cmt_oi_series,total_vol_oi_df):
             IT_S = np.nan                
             UT_B = np.nan
             UT_S = np.nan
-        else:                    
-            tmp_oi_df["Stat"] = (tmp_oi_df["long_position"]+tmp_oi_df["short_position"])/tmp_oi_df["vol"]                        
+        else:
+            oi_sum = tmp_oi_df.drop("date",axis=1).sum()
             total_oi_vol = total_vol_oi_df.iloc[i,:]
+            tmp_oi_df.loc["others","vol"] = total_oi_vol.loc["VOLUME"] - oi_sum["vol"]
+            tmp_oi_df.loc["others","long_position"] = total_oi_vol.loc["OI"] - oi_sum["long_position"]
+            tmp_oi_df.loc["others","short_position"] = total_oi_vol.loc["OI"] - oi_sum["short_position"]
+            tmp_oi_df["Stat"] = (tmp_oi_df["long_position"]+tmp_oi_df["short_position"])/tmp_oi_df["vol"]                        
             total_stat = total_oi_vol.loc["OI"] / total_oi_vol.loc["VOLUME"]
             informed_trader = tmp_oi_df[tmp_oi_df["Stat"]>=total_stat]
             uninformed_trader = tmp_oi_df[tmp_oi_df["Stat"]<total_stat]
@@ -154,6 +159,7 @@ if __name__ =="__main__":
         ITS_signal,UTS_signal,total_table= signal_spyder_for_index(cmt_oi,total_vol_oi_df)
         ITS_signal_list.append(ITS_signal)
         UTS_signal_list.append(UTS_signal)
+        print cmt + "信号产生完毕"
     ITS_signal_df = pd.concat(ITS_signal_list,axis=1)
     UTS_signal_df = pd.concat(UTS_signal_list,axis=1)
     ITS_signal_df.to_csv("signals\ITS_signals.csv")

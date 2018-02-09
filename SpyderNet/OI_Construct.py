@@ -70,14 +70,16 @@ def OI_Construct(cnt_series):
                 tmp_vol_df = oi_download_process(d,tmp_vol_data)
                 tmp_vol_df.drop("date",axis=1,inplace=True)
                 tmp_df = pd.concat([tmp_long_df,tmp_short_df,tmp_vol_df],axis=1)
-                tmp_nan_df = tmp_df[tmp_df.T.isnull().any()]
                 tmp_notnan_df = tmp_df[~tmp_df.T.isnull().any()].copy()
-                tmp_notnan_df.loc["others"] = tmp_nan_df.drop("date",axis=1).sum()
                 oi_df_list.append(tmp_notnan_df)
                 date_list.append(d)
         #下载总成交量和持仓量
         tmp_total = w.wsd(cnt,"volume,oi",tmp_start_date,tmp_end_date,"")
         tmp_total = pd.DataFrame(tmp_total.Data, index=tmp_total.Fields,columns=tmp_total.Times).T
+        if exchange == "CFE":
+            tmp_total["VOLUME"] = tmp_total["VOLUME"].apply(lambda x:(2*x))
+        else:
+            tmp_total["OI"] = tmp_total["OI"].apply(lambda x:(x/2))
         total_oi_vol_list.append(tmp_total)
         print cnt+"处理完毕"
     tmp_series = pd.Series(oi_df_list,index=date_list,name=cmt)

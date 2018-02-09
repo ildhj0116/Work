@@ -17,11 +17,11 @@ plt.rcParams['axes.unicode_minus'] = False
 
 
 #设置多空合约以及手数、乘数
-cnt_list_str = "MA805.CZC,C1805.DCE,ZC805.CZC,A1805.DCE,RU1805.SHF,J1805.DCE,RB1805.SHF,RM805.CZC,I1805.DCE,JM1805.DCE"
+cnt_list_str = "MA805.CZC,C1805.DCE,ZC805.CZC,A1805.DCE,RU1805.SHF,J1805.DCE,RB1805.SHF,RM805.CZC,Y1805.DCE,JM1805.DCE"
 cnt_list = cnt_list_str.split(',')
 long_list = "MA805.CZC,C1805.DCE,ZC805.CZC,A1805.DCE,RU1805.SHF".split(",")
-short_list = "J1805.DCE,RB1805.SHF,RM805.CZC,I1805.DCE,JM1805.DCE".split(",")
-cnt_size = [6,19,11,10,1,-2,-9,-13,-7,-3]
+short_list = "J1805.DCE,RB1805.SHF,RM805.CZC,Y1805.DCE,JM1805.DCE".split(",")
+cnt_size = [6,19,11,10,1,-1,-8,-11,-10,-3]
 cnt_data = w.wss(cnt_list_str, "contractmultiplier")
 cnt_data = pd.DataFrame(cnt_data.Data,columns=cnt_data.Codes,index=cnt_data.Fields).T
 cnt_data["size"] = cnt_size
@@ -29,8 +29,8 @@ cnt_data["size"] = cnt_size
 
 #设置起止时间
 
-start_time = "2018-02-08 11:29:00"
-end_time = "2018-02-08 15:00:00"
+start_time = "2018-02-08 14:59:00"
+end_time = "2018-02-09 15:00:00"
 
 #提取分钟数据
 minute_data = w.wsi(cnt_list_str, "close", start_time, end_time, "")
