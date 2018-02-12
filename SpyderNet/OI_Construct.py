@@ -8,7 +8,6 @@ Created on Mon Jan 29 16:58:47 2018
 import pandas as pd
 from WindPy import w
 from datetime import datetime,timedelta
-import copy
 
 w.start()
 def exchange_of_cmt(cmt):
@@ -89,13 +88,14 @@ def OI_Construct(cnt_series):
     
 if __name__ == "__main__":
     main_cnt_df = pd.read_csv("main_cnt_revised.csv",index_col=0)
-    main_cnt_df["date"] = [datetime.strptime(x,"%Y-%m-%d") for x in main_cnt_df.index]
+    main_cnt_df["date"] = [datetime.strptime(x,"%Y/%m/%d") for x in main_cnt_df.index]
     start_date = datetime.strptime("2009-12-31","%Y-%m-%d")
     end_date = datetime.strptime("2018-1-25","%Y-%m-%d")
     main_cnt_target = main_cnt_df[(main_cnt_df["date"]>start_date) & (main_cnt_df["date"]<end_date)].copy()
     main_cnt_target.drop("date",axis=1,inplace=True)
-    
-    for cmt in ["IF.CFE"]:
+    download_list = main_cnt_target.columns.tolist()
+    download_list = download_list[28:32]
+    for cmt in download_list:
         chart_df,total_oi_volume = OI_Construct(main_cnt_target[cmt])    
         chart_df.to_pickle("OI_data\OI_" + code_of_cmt(cmt) + ".tmp")
         total_oi_volume.to_csv("OI_data\OI_total_" + code_of_cmt(cmt) + ".csv")

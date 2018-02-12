@@ -36,7 +36,7 @@ def signal_spyder_for_index(cmt_oi_series,total_vol_oi_df):
             tmp_oi_df.loc["others","long_position"] = total_oi_vol.loc["OI"] - oi_sum["long_position"]
             tmp_oi_df.loc["others","short_position"] = total_oi_vol.loc["OI"] - oi_sum["short_position"]
             tmp_oi_df["Stat"] = (tmp_oi_df["long_position"]+tmp_oi_df["short_position"])/tmp_oi_df["vol"]                        
-            total_stat = total_oi_vol.loc["OI"] / total_oi_vol.loc["VOLUME"]
+            total_stat = total_oi_vol.loc["OI"] * 2 / total_oi_vol.loc["VOLUME"]
             informed_trader = tmp_oi_df[tmp_oi_df["Stat"]>=total_stat]
             uninformed_trader = tmp_oi_df[tmp_oi_df["Stat"]<total_stat]
             IT_B = informed_trader["long_position"].sum()
