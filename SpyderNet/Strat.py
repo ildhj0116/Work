@@ -133,11 +133,26 @@ def SpyderNet_Bktest(signal,main_cnt_list,start_date,end_date):
     return ret_equity
     
     
+def Sharpe_Ratio(ret_series):
+    ret_series.dropna(inplace=True)
+    return ret_series.mean() / ret_series.std()
     
+def Drawdown(equity_series):
+    max_list = []
+    last_max = -10000000
+    for equity in equity_series:
+        if equity > last_max:
+            max_list.append(equity)
+            last_max = equity
+        else:
+            max_list.append(last_max)
+    max_equity = pd.Series(max_list,index=equity_series.index,name="max")
+    drawdown = (max_equity - equity_series) / max_equity 
+    return max_equity,drawdown
     
-    
-    
-    
+def Annual_Ret(equity_series):
+    date_num = len(equity_series)
+    return (equity_series[-1] / equity_series[0] - 1) / date_num * 252    
     
     
     
@@ -147,19 +162,24 @@ if __name__ =="__main__":
     main_cnt_df = pd.read_csv("main_cnt_revised.csv",parse_dates=[0],index_col=0)
     ###########################################################################
     #测试下一个模块   
-    #cmt_list = main_cnt_df.columns.tolist()
-    cmt_list = ["IF.CFE"]
+    cmt_list = main_cnt_df.columns.tolist()
+    #cmt_list = ["IF.CFE"]
     
-    
+    """
     ITS_signal_list = []
     UTS_signal_list = []
     for cmt in cmt_list:
-        cmt_oi = pd.read_pickle("OI_Data\OI_" + cmt[:-4] +".tmp")
-        total_vol_oi_df = pd.read_csv("OI_Data\OI_total_"+ cmt[:-4] +".csv",parse_dates=[0],index_col=0)
-        ITS_signal,UTS_signal,total_table= signal_spyder_for_index(cmt_oi,total_vol_oi_df)
-        ITS_signal_list.append(ITS_signal)
-        UTS_signal_list.append(UTS_signal)
-        print cmt + "信号产生完毕"
+        try:
+            cmt_oi = pd.read_pickle("OI_Data\OI_" + cmt[:-4] +".tmp")
+            total_vol_oi_df = pd.read_csv("OI_Data\OI_total_"+ cmt[:-4] +".csv",parse_dates=[0],index_col=0)
+        except IOError as e:
+            print e.strerror
+        else:
+            ITS_signal,UTS_signal,total_table= signal_spyder_for_index(cmt_oi,total_vol_oi_df)
+            ITS_signal_list.append(ITS_signal)
+            UTS_signal_list.append(UTS_signal)
+            print cmt + "信号产生完毕"
+        
     ITS_signal_df = pd.concat(ITS_signal_list,axis=1)
     UTS_signal_df = pd.concat(UTS_signal_list,axis=1)
     ITS_signal_df.to_csv("signals\ITS_signals.csv")
@@ -168,12 +188,18 @@ if __name__ =="__main__":
     ###########################################################################
     
     """
+    
     ITS_signal_df = pd.read_csv("signals\ITS_signals.csv",parse_dates=[0],index_col=0)
     UTS_signal_df = pd.read_csv("signals\UTS_signals.csv",parse_dates=[0],index_col=0)
-    """
-    for cmt in cmt_list:
-        equity = SpyderNet_Bktest(ITS_signal_df[cmt+"_ITS_signal"],main_cnt_df[cmt],1,1)
-        equity["equity"].plot()
+    effective_cmt_list = ITS_signal_df.columns.tolist()
+    equity_list = []
+    for cmt in effective_cmt_list:
+        ITS_bktest_result = SpyderNet_Bktest(ITS_signal_df[cmt],main_cnt_df[cmt[:-11]],1,1)
+        equity = ITS_bktest_result["equity"].copy()
+        equity.name = cmt[:-11]
+        equity_list.append(equity)
+        print cmt[:-11] + "净值计算完毕"
+    equity_df = pd.concat(equity_list,axis=1)
     
 
 
