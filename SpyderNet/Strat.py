@@ -133,9 +133,9 @@ def SpyderNet_Bktest(signal,main_cnt_list,start_date,end_date):
     return ret_equity
     
     
-def Sharpe_Ratio(ret_series):
+def Sharpe(ret_series):
     ret_series.dropna(inplace=True)
-    return ret_series.mean() / ret_series.std()
+    return ret_series.mean() / ret_series.std() * np.sqrt(252)
     
 def Drawdown(equity_series):
     max_list = []
@@ -155,6 +155,22 @@ def Annual_Ret(equity_series):
     return (equity_series[-1] / equity_series[0] - 1) / date_num * 252    
     
     
+def Calmar(annual_ret,max_drawdown):
+    return annual_ret / max_drawdown
+
+def Performance(equity_series,ret_series):
+    annual_ret = Annual_Ret(equity_series)
+    sharpe = Sharpe(ret_series)
+    _,drawdown = Drawdown(equity_series)
+    max_drawdown = drawdown.max()
+    calmar = Calmar(annual_ret,max_drawdown)
+    performance = pd.Series([annual_ret,sharpe,max_drawdown,calmar],index=\
+                            ["annual_ret","sharpe","max_drawdown","calmar"])
+    return performance
+    
+
+
+
     
     
         
@@ -193,13 +209,19 @@ if __name__ =="__main__":
     UTS_signal_df = pd.read_csv("signals\UTS_signals.csv",parse_dates=[0],index_col=0)
     effective_cmt_list = ITS_signal_df.columns.tolist()
     equity_list = []
+    performance_list = []
     for cmt in effective_cmt_list:
         ITS_bktest_result = SpyderNet_Bktest(ITS_signal_df[cmt],main_cnt_df[cmt[:-11]],1,1)
         equity = ITS_bktest_result["equity"].copy()
         equity.name = cmt[:-11]
         equity_list.append(equity)
+        ret = ITS_bktest_result["ret"].copy()
+        performance = Performance(equity,ret)
+        performance.name = cmt[:-11]
+        performance_list.append(performance)
         print cmt[:-11] + "净值计算完毕"
     equity_df = pd.concat(equity_list,axis=1)
+    performance_df = pd.concat(performance_list,axis=1)
     
 
 
