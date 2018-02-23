@@ -9,6 +9,11 @@ import numpy as np
 from WindPy import w
 w.start() 
 
+################################################################################################
+#                                                                                              #
+#                                          回测模块                                             #
+#                                                                                              #
+################################################################################################
 
 def signal_spyder_for_index(cmt_oi_series,total_vol_oi_df):    
     cmt_oi_series.dropna(inplace=True)
@@ -64,7 +69,7 @@ def signal_spyder_for_index(cmt_oi_series,total_vol_oi_df):
     cmt_ITS_signal_series[cmt_ITS_series<0]= -1
     cmt_UTS_signal_series = pd.Series(0,index=cmt_UTS_series.index,name=cmt+"_UTS_signal")
     cmt_UTS_signal_series[cmt_UTS_series>0]= -1
-    cmt_UTS_signal_series[cmt_UTS_series<0]= 1
+    cmt_UTS_signal_series[cmt_UTS_series<0]= 1 
     tmp_total_table = pd.DataFrame([cmt_IT_B_list,cmt_IT_S_list,cmt_ITS_list,cmt_UT_B_list,\
                                 cmt_UT_S_list,cmt_UTS_list],index=["IT_B","IT_S","ITS","UT_B",\
                                 "UT_S","UTS"], columns=cmt_oi_series.index).T
@@ -72,7 +77,10 @@ def signal_spyder_for_index(cmt_oi_series,total_vol_oi_df):
     return cmt_ITS_signal_series, cmt_UTS_signal_series, total_table
 
 
+###############################################################################
+
 def MainCnt_trade_start_end(cnt_series):
+    #返回各主力合约的开始和结束时间
     cnt_unique = cnt_series.dropna().unique()
     start_date_list = []
     end_date_list = []
@@ -83,6 +91,7 @@ def MainCnt_trade_start_end(cnt_series):
     df = pd.DataFrame([start_date_list,end_date_list],index=["start_date","end_date"],columns=cnt_unique).T    
     return df
 
+###############################################################################
 def Bktest(signal,open_price,close_price):
     signal.name = "signal"
     open_price.name = "open"
@@ -131,13 +140,20 @@ def SpyderNet_Bktest(signal,main_cnt_list,start_date,end_date):
 
     ret_equity = Bktest(signal_and_price_table["signal"].shift(1),signal_and_price_table["open"],signal_and_price_table["close"])
     return ret_equity
+
+
     
+################################################################################################
+#                                                                                              # 
+#                                            绩效评价模块                                       #
+#                                                                                              #
+################################################################################################
     
-def Sharpe(ret_series):
+def Sharpe(ret_series):     #夏普比率
     ret_series.dropna(inplace=True)
     return ret_series.mean() / ret_series.std() * np.sqrt(252)
     
-def Drawdown(equity_series):
+def Drawdown(equity_series):    #回撤
     max_list = []
     last_max = -10000000
     for equity in equity_series:
@@ -150,15 +166,15 @@ def Drawdown(equity_series):
     drawdown = (max_equity - equity_series) / max_equity 
     return max_equity,drawdown
     
-def Annual_Ret(equity_series):
+def Annual_Ret(equity_series):      #年化收益
     date_num = len(equity_series)
     return (equity_series[-1] / equity_series[0] - 1) / date_num * 252    
     
     
-def Calmar(annual_ret,max_drawdown):
+def Calmar(annual_ret,max_drawdown):    #Calmar比率
     return annual_ret / max_drawdown
 
-def Performance(equity_series,ret_series):
+def Performance(equity_series,ret_series):      #绩效评价main函数
     annual_ret = Annual_Ret(equity_series)
     sharpe = Sharpe(ret_series)
     _,drawdown = Drawdown(equity_series)
@@ -170,9 +186,11 @@ def Performance(equity_series,ret_series):
     
 
 
-
-    
-    
+################################################################################################
+#                                                                                              #
+#                                                主函数                                         #
+#                                                                                              #
+################################################################################################    
         
 if __name__ =="__main__":
     main_cnt_df = pd.read_csv("main_cnt_revised.csv",parse_dates=[0],index_col=0)
@@ -211,15 +229,18 @@ if __name__ =="__main__":
     equity_list = []
     performance_list = []
     for cmt in effective_cmt_list:
-        ITS_bktest_result = SpyderNet_Bktest(ITS_signal_df[cmt],main_cnt_df[cmt[:-11]],1,1)
-        equity = ITS_bktest_result["equity"].copy()
-        equity.name = cmt[:-11]
-        equity_list.append(equity)
-        ret = ITS_bktest_result["ret"].copy()
-        performance = Performance(equity,ret)
-        performance.name = cmt[:-11]
-        performance_list.append(performance)
-        print cmt[:-11] + "净值计算完毕"
+        if cmt == "IF.CFE":
+            ITS_bktest_result = SpyderNet_Bktest(ITS_signal_df[cmt],main_cnt_df[cmt[:-11]],1,1)
+            equity = ITS_bktest_result["equity"].copy()
+            equity.name = cmt[:-11]
+            equity_list.append(equity)
+            ret = ITS_bktest_result["ret"].copy()
+            performance = Performance(equity,ret)
+            performance.name = cmt[:-11]
+            performance_list.append(performance)
+            print cmt[:-11] + "净值计算完毕"
+        else:
+            continue
     equity_df = pd.concat(equity_list,axis=1)
     performance_df = pd.concat(performance_list,axis=1)
     
