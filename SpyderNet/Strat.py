@@ -15,7 +15,7 @@ w.start()
 #                                                                                              #
 ################################################################################################
 
-def signal_spyder_for_index(cmt_oi_series,total_vol_oi_df):    
+def signal_spyder_for_index(cmt_oi_series,total_vol_oi_df，lambda_para):    
     cmt_oi_series.dropna(inplace=True)
     cmt_ITS_list = []
     cmt_UTS_list = []
@@ -92,6 +92,7 @@ def MainCnt_trade_start_end(cnt_series):
     return df
 
 ###############################################################################
+    
 def Bktest(signal,open_price,close_price):
     signal.name = "signal"
     open_price.name = "open"
@@ -107,7 +108,7 @@ def Bktest(signal,open_price,close_price):
     return ret_equity
     
     
-    
+###############################################################################    
 def SpyderNet_Bktest(signal,main_cnt_list,start_date,end_date):
     open_list = main_cnt_list.shift(1)
     close_list = main_cnt_list.shift(1)
@@ -193,38 +194,47 @@ def Performance(equity_series,ret_series):      #绩效评价main函数
 ################################################################################################    
         
 if __name__ =="__main__":
+    ###########################################################################
+    #导入主力合约df
     main_cnt_df = pd.read_csv("main_cnt_revised.csv",parse_dates=[0],index_col=0)
-    ###########################################################################
-    #测试下一个模块   
     cmt_list = main_cnt_df.columns.tolist()
-    #cmt_list = ["IF.CFE"]
-    
-    """
-    ITS_signal_list = []
-    UTS_signal_list = []
-    for cmt in cmt_list:
-        try:
-            cmt_oi = pd.read_pickle("OI_Data\OI_" + cmt[:-4] +".tmp")
-            total_vol_oi_df = pd.read_csv("OI_Data\OI_total_"+ cmt[:-4] +".csv",parse_dates=[0],index_col=0)
-        except IOError as e:
-            print e.strerror
-        else:
-            ITS_signal,UTS_signal,total_table= signal_spyder_for_index(cmt_oi,total_vol_oi_df)
-            ITS_signal_list.append(ITS_signal)
-            UTS_signal_list.append(UTS_signal)
-            print cmt + "信号产生完毕"
-        
-    ITS_signal_df = pd.concat(ITS_signal_list,axis=1)
-    UTS_signal_df = pd.concat(UTS_signal_list,axis=1)
-    ITS_signal_df.to_csv("signals\ITS_signals.csv")
-    UTS_signal_df.to_csv("signals\UTS_signals.csv")
     
     ###########################################################################
+    #设置回测参数
     
-    """
+    #是否用已有信号或是重新产生信号
+    para_signal_already = False
     
-    ITS_signal_df = pd.read_csv("signals\ITS_signals.csv",parse_dates=[0],index_col=0)
-    UTS_signal_df = pd.read_csv("signals\UTS_signals.csv",parse_dates=[0],index_col=0)
+    #ITS大于lambda时视为买入信号
+    para_lambda = 0
+    
+    ###########################################################################
+    #产生信号
+    if para_signal_already = True:    
+        ITS_signal_list = []
+        UTS_signal_list = []
+        for cmt in cmt_list:
+            try:
+                cmt_oi = pd.read_pickle("OI_Data\OI_" + cmt[:-4] +".tmp")
+                total_vol_oi_df = pd.read_csv("OI_Data\OI_total_"+ cmt[:-4] +".csv",parse_dates=[0],index_col=0)
+            except IOError as e:
+                print e.strerror
+            else:
+                ITS_signal,UTS_signal,total_table= signal_spyder_for_index(cmt_oi,total_vol_oi_df)
+                ITS_signal_list.append(ITS_signal)
+                UTS_signal_list.append(UTS_signal)
+                print cmt + "信号产生完毕"
+            
+        ITS_signal_df = pd.concat(ITS_signal_list,axis=1)
+        UTS_signal_df = pd.concat(UTS_signal_list,axis=1)
+        ITS_signal_df.to_csv("signals\ITS_signals.csv")
+        UTS_signal_df.to_csv("signals\UTS_signals.csv")
+    else:
+        ITS_signal_df = pd.read_csv("signals\ITS_signals.csv",parse_dates=[0],index_col=0)
+        UTS_signal_df = pd.read_csv("signals\UTS_signals.csv",parse_dates=[0],index_col=0)
+        
+    ###########################################################################    
+    #根据信号进行回测
     effective_cmt_list = ITS_signal_df.columns.tolist()
     equity_list = []
     performance_list = []

@@ -14,8 +14,8 @@ import copy
 w.start()
 
 
-base_date = "2005-12-31"
-end_date = "2018-01-17"
+base_date = "2004-09-22"
+end_date = "2018-02-25"
 
 
 
@@ -28,7 +28,7 @@ df_list = []
 
 for cmt in cmt_list:
     #持仓量矩阵
-    cmt_data = w.wset("futurecc","wind_code="+cmt)
+    cmt_data = w.wset("futurecc","startdate="+base_date+";enddate="+end_date+";wind_code="+cmt)
     cnt_data = pd.DataFrame(data=cmt_data.Data,index=cmt_data.Fields).T
     effective_cnt = cnt_data[(cnt_data["contract_issue_date"]<datetime.strptime(end_date,"%Y-%m-%d"))\
                              & (cnt_data["last_trade_date"]>datetime.strptime(base_date,"%Y-%m-%d"))]
