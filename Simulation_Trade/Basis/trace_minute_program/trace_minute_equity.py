@@ -11,18 +11,39 @@ Created on Tue Jan 30 10:09:16 2018
 
 @author: 李弘一萌
 """
+
 from WindPy import w
 w.start()
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
-from datetime import datetime 
-
+import operator
+from datetime import datetime
+ 
 #不加这个中文标题可能乱码
 plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
 
 
+
+class Trade:
+    def __init__(self,contract,price,position,time_stamp):
+        self.contract = contract
+        self.price = price
+        self.position = position
+        self.time_stamp = time_stamp
+
+today_trade = pd.read_excel("Trade.xlsx")
+
+today_trade["time"] = today_trade["Date"] + " " + 
+    
+cmpfunc = operator.attrgetter("time_stamp")
+    
+
+
+
+
+"""
 #设置多空合约以及手数、乘数
 cnt_list_str = "ZC805.CZC,C1805.DCE,RU1805.SHF,TA805.CZC,CU1804.SHF,P1805.DCE,I1805.DCE,RB1805.SHF,J1805.DCE,JM1805.DCE"
 cnt_list = cnt_list_str.split(',')
@@ -46,9 +67,11 @@ minute_data["windcode"] = minute_data["windcode"].apply(str)
 minute_data.set_index(["time","windcode"],inplace=True)
 minute_data = minute_data.unstack()
 minute_data.columns = minute_data.columns.levels[1]
+
 #处理nan:全部无值的时间跳过；有的合约有值时，无值的合约使用前值作为其最新报价
 minute_data.dropna(how="all",inplace=True)
-minute_data.fillna(method="ffill",inplace=True) 
+minute_data.fillna(method="ffill",inplace=True)
+ 
 #计算合约价值
 minute_value = minute_data*cnt_data["size"]*cnt_data["CONTRACTMULTIPLIER"]
 minute_value["long_value"] = minute_value.loc[:,long_list].sum(axis=1)
@@ -94,3 +117,5 @@ fig.set_dpi(100)
 fig.set_figheight(10.8)
 fig.set_figwidth(19.2)
 plt.savefig("ratio.jpg")
+
+"""
