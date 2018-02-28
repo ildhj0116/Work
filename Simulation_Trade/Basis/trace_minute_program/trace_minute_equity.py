@@ -25,7 +25,28 @@ plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
 
 
+commodities={
+'DCE':['A','C','CS','M','Y','P','JD','L','PP','V','J','JM','I'],
+'CZC':['CF','SR','RM','TA','FG','MA','ZC'],
+'SHF':['CU','ZN','AL','NI','AU','AG','BU','RU','HC','RB'],
+'CFE':['IC','IH','IF','T','TF'],
+'ALL':['A','C','CS','M','Y','P','JD','L','PP','V','J','JM','I',
+       'CF','SR','RM','TA','FG','MA','ZC','CU','ZN','AL',
+       'NI','AU','AG','BU','RU','HC','RB','IC','IH','IF','T','TF']}
 
+
+def Add_Exchange_For_Cnt(cnt):
+    cmt = [x for x in cnt if not x.isdigit()]
+    cmt = "".join(cmt)
+    if cmt in commodities['DCE']:
+        return cnt+'.DCE'
+    elif cmt in commodities['CZC']:
+        return cnt+'.CZC'
+    elif cmt in commodities['SHF']:
+        return cnt+'.SHF'
+    else:
+        return cnt+'.CFE'
+        
 class Trade:
     def __init__(self,contract,price,position,time_stamp):
         self.contract = contract
@@ -34,14 +55,28 @@ class Trade:
         self.time_stamp = time_stamp
 
 today_trade = pd.read_excel("Trade.xlsx")
-
-today_trade["time"] = today_trade["Date"] + " " + 
     
-cmpfunc = operator.attrgetter("time_stamp")
+#cmpfunc = operator.attrgetter("time_stamp")
     
+#original_equity = 5499499 + (9400+4200-11910-9550-9170-12100+3400-6050+1620-3400)
 
+original_equity = 5465939
 
+today_trade["Contract"] = [Add_Exchange_For_Cnt(x) for x in today_trade["Contract"]]
+trade_cnt_list = today_trade["Contract"].tolist()
+trade_cnt_list_str = ",".join(trade_cnt_list)
+trade_cnt_data = w.wss(trade_cnt_list_str, "contractmultiplier")
+trade_cnt_data = pd.Series(trade_cnt_data.Data[0],name=trade_cnt_data.Fields[0])
+today_trade["multiplier"] = trade_cnt_data
+today_trade["margin"] = today_trade["Position"] * today_trade["Price"] * today_trade["multiplier"] * 0.15
+usable_equity = original_equity - today_trade["margin"].abs().sum()
 
+current_position = pd.read_excel("Current_Position.xlsx")
+if len(today_trade)!=0:
+    for i in range(len):
+        cnt_name = today_trade["Contract"].iloc[i]
+        if  cnt_name in current_position["Contract"]:
+            if today_trade["Position"].loc * current_po
 
 """
 #设置多空合约以及手数、乘数
