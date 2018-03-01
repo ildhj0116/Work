@@ -72,11 +72,11 @@ today_trade["margin"] = today_trade["Position"] * today_trade["Price"] * today_t
 usable_equity = original_equity - today_trade["margin"].abs().sum()
 
 current_position = pd.read_excel("Current_Position.xlsx")
-if len(today_trade)!=0:
-    for i in range(len):
-        cnt_name = today_trade["Contract"].iloc[i]
-        if  cnt_name in current_position["Contract"]:
-            if today_trade["Position"].loc * current_po
+#if len(today_trade)!=0:
+#    for i in range(len):
+#        cnt_name = today_trade["Contract"].iloc[i]
+#        if  cnt_name in current_position["Contract"]:
+#            if today_trade["Position"].loc * current_position[]
 
 """
 #设置多空合约以及手数、乘数

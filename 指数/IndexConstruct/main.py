@@ -49,7 +49,7 @@ for cmt in cmt_list:
     
     main_cnt_code = ','.join(list(max_oi_cnt.unique()))
     
-    main_cnt_data =  w.wsd(main_cnt_code, "settle",base_date,end_date,"")
+    main_cnt_data =  w.wsd(main_cnt_code, "close",base_date,end_date,"")
     main_cnt_settle = pd.DataFrame(data=main_cnt_data.Data,index=main_cnt_data.Codes,\
                                    columns=main_cnt_data.Times).T.fillna(0)
     df_list.append(main_cnt_settle.iloc[:,0:2])
@@ -145,7 +145,7 @@ index_price = pd.Series(index,index=cmt_price.index,name="index")
 feedcost_weekly = w.wsd("S5063761", "close",base_date,end_date,"")
 feedcost_monthly = w.wsd("M5464273", "close",base_date,end_date,"")
 
-index_price.to_csv('index.csv')    
+index_price.to_csv('index_close.csv')    
     
     
     
