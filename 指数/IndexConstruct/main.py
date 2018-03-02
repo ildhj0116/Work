@@ -15,7 +15,7 @@ w.start()
 
 
 base_date = "2004-09-22"
-end_date = "2018-02-25"
+end_date = "2018-03-02"
 
 
 
@@ -139,15 +139,32 @@ index[0] = 1000
 for i in range(1,date_num):
     index[i] = weighted_price[i]/weighted_base[i-1]*index[i-1]
 index_price = pd.Series(index,index=cmt_price.index,name="index")
-#df_list.append(cmt_price)
-#cmt_price = pd.concat(df_list,axis=1)
+
 
 feedcost_weekly = w.wsd("S5063761", "close",base_date,end_date,"")
+feedcost_weekly = pd.Series(feedcost_weekly.Data[0],index=feedcost_weekly.Times,name=feedcost_weekly.Codes[0])
 feedcost_monthly = w.wsd("M5464273", "close",base_date,end_date,"")
+feedcost_monthly = pd.Series(feedcost_monthly.Data[0],index=feedcost_monthly.Times,name=feedcost_monthly.Codes[0])
 
-index_price.to_csv('index_close.csv')    
     
+index_with_cmt = pd.concat([index_price,cmt_price],axis=1)
+index_with_feedcost_weekly = pd.concat([feedcost_weekly,index_price],axis=1).dropna()
+index_with_feedcost_monthly = pd.concat([feedcost_monthly,index_price],axis=1).dropna()
     
-    
-    
+index_price.to_csv('output\index_close.csv')    
+index_with_cmt.to_csv('output\index_with_cmt.csv')    
+index_with_feedcost_weekly.to_csv('output\index_with_feedcost_weekly.csv')   
+index_with_feedcost_monthly.to_csv('output\index_with_feedcost_monthly.csv')
+
+
+
+
+
+
+
+
+
+
+
+
     

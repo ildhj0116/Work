@@ -61,6 +61,9 @@ today_trade = pd.read_excel("Trade.xlsx")
 #original_equity = 5499499 + (9400+4200-11910-9550-9170-12100+3400-6050+1620-3400)
 
 original_equity = 5465939
+margin_rate = 0.15
+
+
 
 today_trade["Contract"] = [Add_Exchange_For_Cnt(x) for x in today_trade["Contract"]]
 trade_cnt_list = today_trade["Contract"].tolist()
@@ -68,32 +71,64 @@ trade_cnt_list_str = ",".join(trade_cnt_list)
 trade_cnt_data = w.wss(trade_cnt_list_str, "contractmultiplier")
 trade_cnt_data = pd.Series(trade_cnt_data.Data[0],name=trade_cnt_data.Fields[0])
 today_trade["multiplier"] = trade_cnt_data
-today_trade["margin"] = today_trade["Position"] * today_trade["Price"] * today_trade["multiplier"] * 0.15
-usable_equity = original_equity - today_trade["margin"].abs().sum()
+today_trade["margin"] = today_trade["Position"] * today_trade["Price"] * today_trade["multiplier"] * margin_rate
+today_trade["margin"] = today_trade["margin"]
 
-current_position = pd.read_excel("Current_Position.xlsx")
-#if len(today_trade)!=0:
-#    for i in range(len):
-#        cnt_name = today_trade["Contract"].iloc[i]
-#        if  cnt_name in current_position["Contract"]:
-#            if today_trade["Position"].loc * current_position[]
 
-"""
+usable_equity = original_equity
+last_position = pd.read_excel("Current_Position.xlsx")
+current_position = last_position.copy()
+if len(today_trade)!=0:
+    for i in range(len(today_trade)):
+        entry_trade = today_trade.iloc[i]
+        cnt_name = entry_trade["Contract"]
+        if  cnt_name in current_position["Contract"]:
+            entry_current = current_position.loc[current_position["Contract"]==cnt_name]
+            #开仓
+            if entry_trade["Position"] * entry_current["Position"] > 0:
+                delta_equity = -abs(entry_trade["margin"])
+                entry_current["Price"] = (entry_current["Price"]*entry_current["Position"] + entry_trade["Price"] * entry_current["Position"]) \
+                                            /(entry_current["Position"] + entry_current["Position"])
+                entry_current["Margin"] += entry_trade["margin"]
+            #平仓
+            else:
+                delta_equity = (entry_trade["Position"] * (entry_trade["Price"] - entry_current["Price"]) * entry_trade["multiplier"] + \
+                                abs(entry_trade["Position"] * entry_current["Price"]) * entry_trade["multiplier"]) * margin_rate
+                entry_current["Margin"] -= abs(entry_trade["Position"] * entry_current["Price"] * entry_trade["multiplier"]) * margin_rate
+            entry_current["Position"] = entry_current["Position"] + entry_trade["Position"]
+            if entry_current["Position"] == 0:
+                current_position = current_position[(True-(current_position["Contract"]==cnt_name))].copy()
+        else:
+            len_current = len(current_position)
+            current_position.loc[len_current,"Contract"] = cnt_name
+            current_position.loc[len_current,"Position"] = entry_trade["Position"]
+            current_position.loc[len_current,"Price"] = entry_trade["Price"]
+            current_position.loc[len_current,"Margin"] = entry_trade["margin"]
+            delta_equity = -abs(entry_trade["margin"])
+        usable_equity += delta_equity
+        
+                
+                                
+
+current_position.set_index("Contract",inplace=True)
 #设置多空合约以及手数、乘数
-cnt_list_str = "ZC805.CZC,C1805.DCE,RU1805.SHF,TA805.CZC,CU1804.SHF,P1805.DCE,I1805.DCE,RB1805.SHF,J1805.DCE,JM1805.DCE"
+cnt_list = current_position.index.tolist()
+cnt_list_str = ",".join(cnt_list)
 cnt_list = cnt_list_str.split(',')
-long_list = "ZC805.CZC,C1805.DCE,RU1805.SHF,TA805.CZC,CU1804.SHF".split(",")
-short_list = "P1805.DCE,I1805.DCE,RB1805.SHF,J1805.DCE,JM1805.DCE".split(",")
-cnt_size = [31,55,4,69,8,-47,-22,-31,-5,-14]
-cnt_data = w.wss(cnt_list_str, "contractmultiplier")
-cnt_data = pd.DataFrame(cnt_data.Data,columns=cnt_data.Codes,index=cnt_data.Fields).T
-cnt_data["size"] = cnt_size
+#long_list = "ZC805.CZC,C1805.DCE,RU1805.SHF,TA805.CZC,CU1804.SHF".split(",")
+#short_list = "P1805.DCE,I1805.DCE,RB1805.SHF,J1805.DCE,JM1805.DCE".split(",")
+#cnt_size = [31,55,4,69,8,-47,-22,-31,-5,-14]
+cnt_multiplier = w.wss(cnt_list_str, "contractmultiplier")
+cnt_multiplier = pd.Series(cnt_multiplier.Data[0],index=cnt_multiplier.Codes,name=cnt_multiplier.Fields[0]).T
+if "CONTRACTMULTIPLIER" in current_position.columns:
+    current_position.drop("CONTRACTMULTIPLIER",inplace=True)
+current_position = pd.concat([current_position,cnt_multiplier],axis=1)
 
 
 #设置起止时间
 
-start_time = "2018-02-12 14:59:00"
-end_time = "2018-02-13 8:00:00"
+start_time = "2018-02-26 9:00:00"
+end_time = "2018-02-27 8:59:00"
 
 #提取分钟数据
 minute_data = w.wsi(cnt_list_str, "close", start_time, end_time, "")
@@ -102,19 +137,21 @@ minute_data["windcode"] = minute_data["windcode"].apply(str)
 minute_data.set_index(["time","windcode"],inplace=True)
 minute_data = minute_data.unstack()
 minute_data.columns = minute_data.columns.levels[1]
+minute_data = minute_data.reindex(columns=current_position.index)
 
 #处理nan:全部无值的时间跳过；有的合约有值时，无值的合约使用前值作为其最新报价
 minute_data.dropna(how="all",inplace=True)
 minute_data.fillna(method="ffill",inplace=True)
  
 #计算合约价值
-minute_value = minute_data*cnt_data["size"]*cnt_data["CONTRACTMULTIPLIER"]
-minute_value["long_value"] = minute_value.loc[:,long_list].sum(axis=1)
-minute_value["short_value"] = minute_value.loc[:,short_list].sum(axis=1)
-minute_value["ratio"] = minute_value["long_value"]/(-minute_value["short_value"])
-minute_value["diff"] = minute_value["long_value"]+minute_value["short_value"]
+minute_value = minute_data * current_position["Position"] * current_position["CONTRACTMULTIPLIER"]
+float_pnl = minute_value - current_position["Margin"]/0.15
+total_pnl = float_pnl.sum(axis=1)
+usable_equity_series = pd.Series(usable_equity,index=total_pnl.index)
+total_margin = current_position["Margin"].abs().sum()
+equity = usable_equity + total_pnl + total_margin
 
-
+"""
 #导入前数据
 ratio = pd.read_csv("ratio.csv",index_col=0,names=["time","ratio"])
 ratio.dropna(inplace=True)

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue Jan 16 14:01:52 2018
-
+计算期货市场的沉淀资金并分版块画图
 @author: LHYM
 """
 from contract_code import contract_code
@@ -22,14 +22,15 @@ cmt_dict = {"agri_cmt":agri_cmt, "chem_cmt":chem_cmt, "fmt_cmt":fmt_cmt, "nfmt_c
 
 filename = "ContractValue.csv"
 ###############################################################################    
+start_date = '2017-09-01'
+end_date = '2018-03-01'
 
 # 下载所有品种所有合约列表
-total_cnt = contract_code(cmt_dict) 
+total_cnt = contract_code(cmt_dict,start_date,end_date) 
 print "合约制作完毕"
 
 #根据下载的合约列表在所给时间段中每日下载持仓量、收盘价和乘数并计算合约价值，并存入csv文件中
-start_date = '2015-01-01'
-end_date = '2018-01-15'
+
 CV_Compute(total_cnt,start_date,end_date,cmt_dict,filename)
 
 

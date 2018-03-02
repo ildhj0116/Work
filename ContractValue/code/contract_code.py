@@ -30,7 +30,7 @@ def variety_code(cmt):
         return cmt + '.CFE'
     
 
-def contract_code(cmt_dict):
+def contract_code(cmt_dict,start_date,end_date):
     """
     根据品种分类，对每个品种分别下载其所有合约，包括目前存在和已经退市的，下载的内容包括
     合约代码、上市退市日期等，为了之后在某一日期筛选当日有效合约准备。下载后所有合约信息
@@ -41,7 +41,7 @@ def contract_code(cmt_dict):
     cmt_variety = zip(cmt_dict["all_cmt"],cmt_code)
     cmt_list = []
     for cmt in cmt_variety:
-        data = w.wset("futurecc","wind_code="+cmt[1])
+        data = w.wset("futurecc","startdate="+start_date+";enddate="+end_date+";wind_code="+cmt[1])
         df = pd.DataFrame(data.Data, index=data.Fields).T
         cmt_list.append(df)
     total_cnt = pd.concat(cmt_list)
