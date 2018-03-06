@@ -91,7 +91,7 @@ def MainCnt_trade_start_end(cnt_series):
     return df
 
 ###############################################################################
-def Spyder_Bktest(signal,main_cnt_list,price_table):
+def Spyder_Bktest(signal,main_cnt_list,price_table,fee_rate=0):
     signal.name = "signal"
     main_cnt_list.name = "main_cnt"
     signal.dropna(inplace=True)
@@ -99,17 +99,18 @@ def Spyder_Bktest(signal,main_cnt_list,price_table):
     signal_and_cnt = pd.concat([signal,main_cnt_list],axis=1)
     signal_and_cnt.dropna(inplace=True)
     signal_and_price_table = pd.concat([signal_and_cnt,price_table],axis=1) 
-    return Bktest(signal_and_price_table["signal"].shift(1),signal_and_price_table["open"],signal_and_price_table["close"])
+    return Bktest(signal_and_price_table["signal"].shift(1),signal_and_price_table["open"],signal_and_price_table["close"],fee_rate)
     
     
-def Bktest(signal,open_price,close_price):
+def Bktest(signal,open_price,close_price,fee_rate):
     signal.name = "signal"
     open_price.name = "open"
     close_price.name = "close"
     table = pd.concat([signal,open_price,close_price],axis=1)
     table.dropna(inplace=True)
     original_ret = table["close"] / table["open"] - 1
-    strat_ret = original_ret * table["signal"]
+    fee = fee_rate * (table["close"] / table["open"] - 1)
+    strat_ret = original_ret * table["signal"] - fee
     strat_ret.name = "ret"
     equity = strat_ret.apply(lambda x:(x+1)).cumprod()
     equity.name = "equity"    
@@ -216,7 +217,7 @@ if __name__ =="__main__":
     #设置回测参数
        
     #ITS大于lambda时视为买入信号
-    para_lambda_optimize = True
+    para_lambda_optimize = False
     if para_lambda_optimize==True:
         para_lambda_list = [x/100.0 for x in range(-100,100)]
     else:
@@ -227,6 +228,9 @@ if __name__ =="__main__":
     para_cmt = ["IF.CFE"]
     print "部分测试模式，品种为:" + ",".join(para_cmt) if para_cmt_single == True else "全部测试"
 
+    #手续费
+    para_fee = True
+    para_fee_rate = 2.0/10000 if para_fee == True else 0
     ###########################################################################
     #导入主力合约df
     main_cnt_df = pd.read_csv("main_cnt_revised.csv",parse_dates=[0],index_col=0)
@@ -243,36 +247,54 @@ if __name__ =="__main__":
         #参数优化
         equity_series_list = []
         performance_series_list = []
+        equity_withfee_series_list = []
+        performance_withfee_series_list = []
         try:
             cmt_oi = pd.read_pickle("OI_Data\OI_" + cmt[:-4] + ".tmp")
             total_vol_oi_df = pd.read_csv("OI_Data\OI_total_"+ cmt[:-4] +".csv",parse_dates=[0],index_col=0)
         except IOError as e:
             print e.strerror
         else:
+            #生成指标
             ITS,UTS = SpyderNet_1_ITS_UTS_Generation(cmt_oi,total_vol_oi_df)
+            print "指标生成完毕"
+            #下载开平仓价格
             price_table = SpyderNet_Bktest_Price_Generation(main_cnt_df[cmt],1,1)
+            print "开平仓价格下载完毕"
             for para_lambda in para_lambda_list:
                 ###################################################################
                 #产生信号                
-                ITS_signal,UTS_signal = SpyderNet_1_Signal_Generation(ITS,UTS,para_lambda)        
+                ITS_signal,UTS_signal = SpyderNet_1_Signal_Generation(ITS,UTS,para_lambda)
                 #######################################################################    
                 #根据信号进行回测                
                 ITS_bktest_result = Spyder_Bktest(ITS_signal,main_cnt_df[cmt],price_table)
+                ITS_bktest_result_withfee = Spyder_Bktest(ITS_signal,main_cnt_df[cmt],price_table,para_fee_rate)
                 equity = ITS_bktest_result["equity"].copy()
                 ret = ITS_bktest_result["ret"].copy()
                 performance = Performance(equity,ret)
+                
+                equity_withfee = ITS_bktest_result_withfee["equity"].copy()
+                ret_withfee = ITS_bktest_result_withfee["ret"].copy()
+                performance_withfee = Performance(equity_withfee,ret_withfee)
                 #print cmt[:-11] + "净值计算完毕"
                 
                 equity_series_list.append(equity)
                 performance_series_list.append(performance)
+                
+                equity_withfee_series_list.append(equity)
+                performance_withfee_series_list.append(performance)                
                 print cmt + ": lambda=" + str(para_lambda) 
                 
             equity_df = pd.concat(equity_series_list,axis=1)
             performance_df = pd.concat(performance_series_list,axis=1)
+            equity_withfee_df = pd.concat(equity_series_list,axis=1)
+            performance_withfee_df = pd.concat(performance_series_list,axis=1)
             equity_df.columns = para_lambda_list
             performance_df.columns = para_lambda_list
             performance_df = performance_df.T
-
+            equity_withfee_df.columns = para_lambda_list
+            performance_withfee_df.columns = para_lambda_list
+            performance_withfee_df = performance_withfee_df.T
 
 
 
