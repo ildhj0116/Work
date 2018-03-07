@@ -225,14 +225,15 @@ if __name__ =="__main__":
     
     #是否测单独合约
     para_cmt_single = True
-    para_cmt = ["IF.CFE"]
+    para_cmt = ["IF.CFE"]   #单独测试的品种
     print "部分测试模式，品种为:" + ",".join(para_cmt) if para_cmt_single == True else "全部测试"
 
     #手续费
     para_fee = True
     para_fee_rate = 2.0/10000 if para_fee == True else 0
+    
     ###########################################################################
-    #导入主力合约df
+    #导入主力合约时间序列
     main_cnt_df = pd.read_csv("main_cnt_revised.csv",parse_dates=[0],index_col=0)
     if para_cmt_single == True:
         cmt_list = para_cmt
@@ -244,23 +245,29 @@ if __name__ =="__main__":
 
     for cmt in cmt_list:
         #######################################################################
-        #参数优化
+        #开始回测
         equity_series_list = []
         performance_series_list = []
         equity_withfee_series_list = []
         performance_withfee_series_list = []
         try:
+            #导入指定品种主力合约会员持仓数据列表
             cmt_oi = pd.read_pickle("OI_Data\OI_" + cmt[:-4] + ".tmp")
+            #导入指定品种主力合约日总持仓量数据
             total_vol_oi_df = pd.read_csv("OI_Data\OI_total_"+ cmt[:-4] +".csv",parse_dates=[0],index_col=0)
         except IOError as e:
-            print e.strerror
+            #处理不存在该品种持仓数据的情况
+            print cmt + "持仓数据导入失败: " + e.strerror
         else:
-            #生成指标
-            ITS,UTS = SpyderNet_1_ITS_UTS_Generation(cmt_oi,total_vol_oi_df)
-            print "指标生成完毕"
             #下载开平仓价格
             price_table = SpyderNet_Bktest_Price_Generation(main_cnt_df[cmt],1,1)
             print "开平仓价格下载完毕"
+                        
+            #生成指标
+            ITS,UTS = SpyderNet_1_ITS_UTS_Generation(cmt_oi,total_vol_oi_df)
+            print "指标生成完毕"
+            
+            #参数优化
             for para_lambda in para_lambda_list:
                 ###################################################################
                 #产生信号                
