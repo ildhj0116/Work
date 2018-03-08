@@ -84,6 +84,7 @@ def Main_Contract(cmt_list, start_date, end_date, decide_param = 2):
                         decide_day += 1
                         if decide_day>=decide_param:
                             decide_flag = False
+                            original_cnt = sub_cnt
                             back_cnt_list = cnt_all_list[:(cnt_all_list.index(sub_cnt))]
                     elif main_cnt_list[t]==original_cnt:
                         decide_flag = False
@@ -94,6 +95,7 @@ def Main_Contract(cmt_list, start_date, end_date, decide_param = 2):
                 filtered_main_cnt_list[t] = main_cnt_list[t]
                 original_cnt = main_cnt_list[t]
                 sub_cnt = main_cnt_list[t]
+                back_cnt_list = cnt_all_list[:(cnt_all_list.index(sub_cnt))]
                 decide_flag = False 
         filter_main_cnt = pd.Series(filtered_main_cnt_list,index=max_oi_cnt.index)
         filter_main_cnt.name = cmt
@@ -123,10 +125,10 @@ def exchange(cmt):
         
 if __name__ == "__main__":
     cnt_list = commodities['ALL']
-    base_date = "2009-12-31"
-    end_date = "2018-01-17"    
+    base_date = "2018-01-15"
+    end_date = "2018-01-25"    
     #cmt_list = [exchange(x) for x in cnt_list]
-    cmt_list = ["BU.SHF"]
+    cmt_list = ["IF.CFE"]
     main_cnt_df = Main_Contract(cmt_list,base_date,end_date)
     #main_cnt_df.to_csv("main_cnt_MA.csv")
 
