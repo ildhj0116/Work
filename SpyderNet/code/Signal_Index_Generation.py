@@ -8,6 +8,16 @@ Created on Thu Mar 08 14:44:30 2018
 import pandas as pd
 import numpy as np
 
+def sign(x):
+    if x>0:
+        return 1
+    elif x<0:
+        return -1
+    else:
+        return 0
+    
+    
+    
 def SpyderNet_1_ITS_UTS_Generation(index_name,cmt_oi_series,total_vol_oi_df):
     cmt_oi_series.dropna(inplace=True)
     cmt = cmt_oi_series.name
@@ -52,6 +62,7 @@ def SpyderNet_1_ITS_UTS_Generation(index_name,cmt_oi_series,total_vol_oi_df):
 
 def OI_Factor_Generation(factor_num,cmt_oi_series,total_vol_oi_df,para_r,para_n):
     cmt_oi_series.dropna(inplace=True)
+    cmt = cmt_oi_series.name
     long_oi_list = []
     short_oi_list = []
     total_list = []
@@ -72,11 +83,27 @@ def OI_Factor_Generation(factor_num,cmt_oi_series,total_vol_oi_df,para_r,para_n)
                               columns=cmt_oi_series.index).T
         
     if factor_num == 1:
-        cmt_index_series = (oi["long_position"] - oi["short_position"]) / (oi["long_position"] - oi["short_position"]).shift(para_r) -1 
-
-    
-
-                                     
+        cmt_index_series = (oi["long_position"] - oi["short_position"]) / (oi["long_position"] - oi["short_position"]).shift(para_r) - 1 
+    elif factor_num == 2:
+        cmt_index_series = (oi["long_position"] - oi["short_position"]) / oi["total_position"] - \
+                           ((oi["long_position"] - oi["short_position"]) / oi["total_position"]).shift(para_r)  
+    elif factor_num == 3:
+        cmt_index_series = (oi["long_position"] - oi["short_position"]) / (oi["long_position"] + oi["short_position"])
+    elif factor_num == 4:
+        cmt_index_series = oi["long_position"]/ oi["long_position"].shift(para_r) - 1
+    elif factor_num == 5:
+        cmt_index_series = - (oi["short_position"] / oi["short_position"].shift(para_r) - 1)
+    elif factor_num == 6:
+        cmt_index_series = (oi["long_position"] / oi["total_position"]) - (oi["long_position"] / oi["total_position"]).shift(para_r) 
+    elif factor_num == 7:
+        cmt_index_series = - ((oi["short_position"] / oi["total_position"]) - (oi["short_position"] - oi["total_position"]).shift(para_r))
+    elif factor_num == 8:
+        cmt_index_series = ((oi["long_position"] / oi["long_position"].shift(para_r) - 1).apply(sign) + (oi["short_position"].shift(para_r) / oi["short_position"] - 1).apply(sign)).apply(sign)
+    elif factor_num == 9:
+        cmt_index_series = (oi["long_position"] / oi["long_position"].shift(para_r) - 1).apply(sign)
+    elif factor_num == 10:
+        cmt_index_series = (oi["short_position"].shift(para_r) / oi["short_position"] - 1).apply(sign)        
+    cmt_index_series.name = cmt                                     
     return cmt_index_series
 
 

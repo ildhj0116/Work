@@ -34,7 +34,7 @@ else:
 
 #是否测单独合约
 para_cmt_single = True
-para_cmt = ["IF.CFE"]   #单独测试的品种
+para_cmt = ["SR.CZC"]   #单独测试的品种
 print "部分测试模式，品种为:" + ",".join(para_cmt) if para_cmt_single == True else "全部测试"
 
 #手续费
@@ -43,13 +43,13 @@ para_fee_rate = 2.0/10000 if para_fee == True else 0
 
 #策略名称
 #para_strat_name = "ITS"
-para_strat_name = ("oi_factor",1)
+para_strat_name = ("oi_factor",8)
 
 #持仓因子回测窗口
 para_r = 1
 
 #持仓因子排名前N位
-para_n = 5
+para_n = 10
 
 ###############################################################################
 ###############################################################################

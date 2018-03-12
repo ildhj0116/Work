@@ -19,8 +19,12 @@ def SpyderNet_1_Signal_Generation(index_name,cmt_index_series,para_lambda):
     return cmt_signal_series
 
 
-def OI_Factor_Signal_Generation(factor_num,cmt_index_series,paras):
-    pass
+def OI_Factor_Signal_Generation(factor_num,cmt_index_series,para_lambda):
+    cmt = cmt_index_series.name 
+    cmt_signal_series = pd.Series(0,index=cmt_index_series.index,name=cmt+"OI_factor_"+str(factor_num))
+    cmt_signal_series[cmt_index_series>para_lambda]= 1
+    cmt_signal_series[cmt_index_series<para_lambda]= -1
+    return cmt_signal_series
 
 def Signal_Generation_Main(index_name,cmt_index_series,paras):
     if (index_name == "ITS") or (index_name == "UTS"):
