@@ -87,7 +87,7 @@ def OI_Construct(cnt_series):
                     
     
 if __name__ == "__main__":
-    main_cnt_df = pd.read_csv("main_cnt_revised.csv",index_col=0)
+    main_cnt_df = pd.read_csv("main_cnt_revised.csv",parse_dates=[0],index_col=0)
     main_cnt_df["date"] = [datetime.strptime(x,"%Y/%m/%d") for x in main_cnt_df.index]
     start_date = datetime.strptime("2009-12-31","%Y-%m-%d")
     end_date = datetime.strptime("2018-1-25","%Y-%m-%d")

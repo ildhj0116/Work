@@ -25,6 +25,7 @@ def SpyderNet_1_ITS_UTS_Generation(index_name,cmt_oi_series,total_vol_oi_df):
     cmt_B_list = []
     cmt_S_list = []
     
+    
     for i in range(len(cmt_oi_series)):
         tmp_oi_df = cmt_oi_series[i]
         
