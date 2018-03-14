@@ -67,19 +67,15 @@ def OI_Factor_Generation(factor_num,cmt_oi_series,total_vol_oi_df,para_r,para_n)
     long_oi_list = []
     short_oi_list = []
     total_list = []
-    
+    para_n_dict = {5:0,10:1,20:2}
+
     for i in range(len(cmt_oi_series)):
-        tmp_oi_df = cmt_oi_series[i]        
-        if len(tmp_oi_df)<=2:
-            long_oi_list.append(np.nan)
-            short_oi_list.append(np.nan)
-            total_list.append(np.nan)               
-        else:
-            total_oi_vol = total_vol_oi_df.iloc[i,:]
-            tmp_TopN = tmp_oi_df.iloc[:para_n,:]
-            long_oi_list.append(tmp_TopN["long_position"].sum())
-            short_oi_list.append(tmp_TopN["short_position"].sum())
-            total_list.append(total_oi_vol["OI"])
+        tmp_oi_df = cmt_oi_series[i]
+        total_oi_vol = total_vol_oi_df.iloc[i,:]        
+        tmp_TopN = tmp_oi_df.iloc[para_n_dict[para_n],:]
+        long_oi_list.append(tmp_TopN["long_position"])
+        short_oi_list.append(tmp_TopN["short_position"])
+        total_list.append(total_oi_vol["OI"])
     oi = pd.DataFrame([long_oi_list,short_oi_list,total_list],index=["long_position","short_position","total_position"],\
                               columns=cmt_oi_series.index).T
         
