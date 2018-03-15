@@ -45,8 +45,8 @@ para_slippage = 1
 
 
 #策略名称
-para_strat_name = "ITS"
-#para_strat_name = ("oi_factor",10)
+#para_strat_name = "UTS"
+para_strat_name = ("oi_factor",10)
 
 #持仓因子回测窗口
 para_r = 1
