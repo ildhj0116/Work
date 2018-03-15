@@ -15,7 +15,7 @@ import pandas as pd
 
 
 ###############################################################################
-def OI_Strat_Bktest(signal,main_cnt_list,price_table,fee_rate=0):
+def OI_Strat_Bktest(signal,main_cnt_list,price_table,fee_rate=0,index_cost=0):
     signal.name = "signal"
     main_cnt_list.name = "main_cnt"
     signal.dropna(inplace=True)
@@ -23,10 +23,11 @@ def OI_Strat_Bktest(signal,main_cnt_list,price_table,fee_rate=0):
     signal_and_cnt = pd.concat([signal,main_cnt_list],axis=1)
     signal_and_cnt.dropna(inplace=True)
     signal_and_price_table = pd.concat([signal_and_cnt,price_table],axis=1) 
-    return Bktest_ret(signal_and_price_table["signal"].shift(1),signal_and_price_table["open"],signal_and_price_table["close"],fee_rate)
+    return Bktest_ret(signal_and_price_table["signal"].shift(1),signal_and_price_table["open"],\
+                      signal_and_price_table["close"],fee_rate,index_cost)
     
     
-def Bktest_ret(signal,open_price,close_price,fee_rate):
+def Bktest_ret(signal,open_price,close_price,fee_rate,index_cost):
     signal.name = "signal"
     open_price.name = "open"
     close_price.name = "close"

@@ -22,17 +22,14 @@ def SpyderNet_1_ITS_UTS_Generation(index_name,cmt_oi_series,total_vol_oi_df):
     cmt_oi_series.dropna(inplace=True)
     cmt = cmt_oi_series.name
     cmt_index_list = []
-    cmt_B_list = []
-    cmt_S_list = []
+
     
     
     for i in range(len(cmt_oi_series)):
         tmp_oi_df = cmt_oi_series[i]
         
         if len(tmp_oi_df)<=2:
-            index=0
-            B = np.nan
-            S = np.nan                
+            index=0             
         else:
             oi_sum = tmp_oi_df.drop("date",axis=1).sum()
             total_oi_vol = total_vol_oi_df.iloc[i,:]
@@ -43,18 +40,22 @@ def SpyderNet_1_ITS_UTS_Generation(index_name,cmt_oi_series,total_vol_oi_df):
             total_stat = total_oi_vol.loc["OI"] * 2 / total_oi_vol.loc["VOLUME"]
             informed_trader = tmp_oi_df[tmp_oi_df["Stat"]>=total_stat]
             uninformed_trader = tmp_oi_df[tmp_oi_df["Stat"]<total_stat]
-            if index_name == "ITS":
-                B = informed_trader["long_position"].sum()
-                S = informed_trader["short_position"].sum()
-            elif index_name == "UTS":                    
-                B = uninformed_trader["long_position"].sum()
-                S = uninformed_trader["short_position"].sum()
-            if B+S==0:
+            I_B = informed_trader["long_position"].sum()
+            I_S = informed_trader["short_position"].sum()            
+            U_B = uninformed_trader["long_position"].sum()
+            U_S = uninformed_trader["short_position"].sum()
+            if (I_B + I_S == 0) or (U_B + U_S == 0):
                 index = 0
             else:
-                index = (B-S)/(B+S)
-        cmt_B_list.append(B)
-        cmt_S_list.append(S)
+                if index_name == "ITS":
+                    index = (I_B-I_S)/(I_B+I_S)
+                elif index_name == "UTS":                    
+                    index = (U_B-U_S)/(U_B+U_S)
+                elif index_name == "MTS":
+                    index = (I_B-I_S)/(I_B+I_S) - (U_B-U_S)/(U_B+U_S)
+                else:
+                    print "策略名称有误!"
+
         cmt_index_list.append(index)
         
     cmt_index_series = pd.Series(cmt_index_list,index=cmt_oi_series.index,name=cmt)
@@ -106,7 +107,7 @@ def OI_Factor_Generation(factor_num,cmt_oi_series,total_vol_oi_df,para_r,para_n)
 
 
 def Signal_Index_Generation_Main(index_name,cmt_oi_series,total_vol_oi_df,para_r,para_n):
-    if (index_name == "ITS") or (index_name == "UTS"):
+    if (index_name == "ITS") or (index_name == "UTS") or (index_name == "MTS"):
         index_series = SpyderNet_1_ITS_UTS_Generation(index_name,cmt_oi_series,total_vol_oi_df)
     elif (type(index_name) == tuple) and (index_name[0]== "oi_factor"):
         index_series = OI_Factor_Generation(index_name[1],cmt_oi_series,total_vol_oi_df,para_r,para_n)

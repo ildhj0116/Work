@@ -111,13 +111,17 @@ def OI_Construct_TopN(cnt_series):
                              "short_position_increase,vol")                
         
         tmp_oi_data = pd.DataFrame(tmp_oi_data.Data, index=tmp_oi_data.Fields).T
-        tmp_date_list = tmp_oi_data["date"].unique().tolist()
-        tmp_date_list.reverse()
-        for d in tmp_date_list:
-            tmp_df = oi_download_process_TopN(d,tmp_oi_data)                    
-            oi_df_list.append(tmp_df)
-            date_list.append(d)
-        print cnt+"处理完毕"
+        if len(tmp_oi_data) == 0:
+            print cnt + "无持仓数据"
+            continue
+        else:
+            tmp_date_list = tmp_oi_data["date"].unique().tolist()
+            tmp_date_list.reverse()
+            for d in tmp_date_list:
+                tmp_df = oi_download_process_TopN(d,tmp_oi_data)                    
+                oi_df_list.append(tmp_df)
+                date_list.append(d)
+        print cnt + "处理完毕"
     tmp_series = pd.Series(oi_df_list,index=date_list,name=cmt)
     return tmp_series
 
@@ -148,20 +152,20 @@ if __name__ == "__main__":
     end_date = datetime.strptime("2018-3-5","%Y-%m-%d")
     main_cnt_target = main_cnt_df[(main_cnt_df.index>start_date) & (main_cnt_df.index<end_date)].copy()
     download_list = main_cnt_target.columns.tolist()
-    #download_list = download_list[32:33]
+    download_list = ["MA.CZC"]
     for cmt in download_list:
         #下载ITS相关持仓排名
         #chart_df,total_oi_volume = OI_Construct(main_cnt_target[cmt])
         
         #下载持仓因子相关的持仓排名
-        #chart_df = OI_Construct_TopN(main_cnt_target[cmt])
+        chart_df = OI_Construct_TopN(main_cnt_target[cmt])
         
         #下载日总持仓量
-        total_oi_volume = Total_OI_Update(main_cnt_target[cmt])
+        #total_oi_volume = Total_OI_Update(main_cnt_target[cmt])
         
-        #chart_df.to_pickle("../OI_TopN_data/OI_" + code_of_cmt(cmt) + ".tmp")
+        chart_df.to_pickle("../OI_TopN_data/OI_" + code_of_cmt(cmt) + ".tmp")
         
-        total_oi_volume.to_csv("../OI_data/OI_total_" + code_of_cmt(cmt) + ".csv")
+        #total_oi_volume.to_csv("../OI_data/OI_total_" + code_of_cmt(cmt) + ".csv")
         print cmt + "下载完毕"
         
     #try_df = pd.read_pickle("OI.tmp")
