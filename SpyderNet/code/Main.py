@@ -46,10 +46,11 @@ para_slippage = 1
 
 
 #策略名称
-para_single_strat = True
+para_single_strat = False
 #para_strat = "MTS"
 para_strat = ("oi_factor",10)
-para_strat_totaol_list = ["ITS","UTS","MTS"]
+para_strat_totaol_list = []
+#para_strat_totaol_list.extend(["ITS","UTS","MTS"])
 para_strat_totaol_list.extend(zip(["oi_factor"]*10,range(1,11)))
 para_strat_list = [para_strat] if para_single_strat else para_strat_totaol_list
                      
@@ -200,7 +201,7 @@ if __name__ =="__main__":
             ret.name = cmt
             ret_cmt_list.append(ret)           
             perf.name = cmt
-            perf_cmt_list.append(perf)    
+            perf_cmt_list.append(perf)                  
             print cmt + "回测完毕"
         
         
