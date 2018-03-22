@@ -12,7 +12,7 @@ w.start()
 
 position = "C1805.DCE,FG805.CZC,RU1805.SHF,TA805.CZC,BU1806.SHF,P1805.DCE,RM805.CZC,RB1805.SHF,J1805.DCE,Y1805.DCE"
 
-date = "2018-03-15"
+date = "2018-03-21"
 
 close = w.wsd(position, "close", date, date, "")
 close = pd.DataFrame(close.Data,index=close.Fields,columns=close.Codes).T
