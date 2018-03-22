@@ -6,7 +6,7 @@ Created on Mon Feb 05 13:34:00 2018
 """
 import pandas as pd
 from WindPy import w
-import gc
+from guppy import hpy; hp = hpy()
 from Performance import Performance_Main
 from Signal_Index_Generation import Signal_Index_Generation_Main
 from Signal_Generation import Signal_Generation_Main
@@ -50,7 +50,7 @@ para_single_strat = False
 #para_strat = "MTS"
 para_strat = ("oi_factor",10)
 para_strat_totaol_list = []
-#para_strat_totaol_list.extend(["ITS","UTS","MTS"])
+para_strat_totaol_list.extend(["ITS","UTS","MTS"])
 para_strat_totaol_list.extend(zip(["oi_factor"]*10,range(1,11)))
 para_strat_list = [para_strat] if para_single_strat else para_strat_totaol_list
                      
@@ -132,7 +132,7 @@ if __name__ =="__main__":
     print "价格及持仓数据导入完毕"
     oi_data = pd.DataFrame([cmt_oi_list,cmt_oi_TopN_list,total_oi_list],index=["oi_table","oi_TopN_table","total_oi"],\
                            columns=effective_cmt_list)
-    
+
     ###########################################################################
     #逐品种回测
     strat_equity_list = []
@@ -179,7 +179,7 @@ if __name__ =="__main__":
                 ret_series_list.append(ret)
                 performance_series_list.append(perf)        
                 #print cmt + ": lambda=" + str(para_lambda) 
-            
+
             #记录随lambda变化的净值及评价结果
             equity_df = pd.concat(equity_series_list,axis=1)
             ret_df = pd.concat(ret_series_list,axis=1)
@@ -188,7 +188,9 @@ if __name__ =="__main__":
             ret_df.columns = para_lambda_list
             performance_df.columns = para_lambda_list
             performance_df = performance_df.T
-                            
+            
+
+                
             #记录品种表现
             if para_lambda_optimize == True:
                 best_lambda = performance_df["sharpe"].idxmax()
@@ -203,7 +205,9 @@ if __name__ =="__main__":
             perf.name = cmt
             perf_cmt_list.append(perf)                  
             print cmt + "回测完毕"
-        
+            
+            h = hp.heap()
+            print h
         
         equity_strat = pd.concat(equity_cmt_list,axis=1)
         ret_strat = pd.concat(ret_cmt_list,axis=1)       
@@ -220,6 +224,9 @@ if __name__ =="__main__":
         weighted_equity.name = weighted_ret.name = weighted_perf.name = para_strat_name
         strat_equity_list.append(weighted_equity)
         strat_perf_list.append(weighted_perf)
+        
+        #
+        
         
         #输出
         equity_strat.index = [x.date() for x in equity_strat.index]
