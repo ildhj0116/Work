@@ -26,8 +26,8 @@ DEATH = u'死叉'
 wd = 'wd_stra' 
 
   
-today = '2018-03-19'
-yesterday = '2018-03-16'
+today = '2018-03-23'
+yesterday = '2018-03-22'
 TEST_MODE = 0
 
 LONG = u'多头'
@@ -234,9 +234,6 @@ if __name__ == '__main__':
         pickle.dump(df_ori,open(df_ori_file,'wb'))
         
 
-
-
-#    pickle.dump(df_ori, open('df_ori-{}.p'.format(today),'rb'))
     metal = ['CU','AL','ZN','PB','NI','SN','AG','AU']
 
     df = df_ori[colname].copy()

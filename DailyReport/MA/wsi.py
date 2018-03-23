@@ -134,7 +134,7 @@ def hourly_ma(cnt,testday,wd=None,sp='ratio'):
         i=cnt[:-4]
         bar=single_bar(cnt,start,end)
         bar_1 = bar.copy()
-        bar=bar[bar.index.map(lambda x:x.strftime('%H:%M:%S') in hourlist)]
+        bar=bar[bar.index.map(lambda x:x.strftime('%H:%M:%S') in hourlist,)]
         bar.loc[bar_1.index[-1]] = bar_1.iloc[-1]
 #        bar.loc[]
         for m in wd:
