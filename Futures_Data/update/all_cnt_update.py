@@ -13,8 +13,8 @@ w.start()
 
 
 cmt_list = pd.read_csv("../cmt_list/cmt_list.csv")
-cmt_list = cmt_list["cmt"].tolist()
-#cmt_list = ["WH.CZC"]
+#cmt_list = cmt_list["cmt"].tolist()
+cmt_list = ["SN.SHF"]
 
 def data_download(cmt,start_date,end_date):
     tmp_cnt_list = w.wset("futurecc","startdate="+start_date+";enddate="+end_date+";wind_code="+cmt+";field=wind_code")
@@ -41,7 +41,9 @@ def data_download(cmt,start_date,end_date):
     return tmp_update_cl,tmp_update_open,tmp_update_vol,tmp_update_oi
 
 last_update_date  = "2017-7-29"
-today = datetime.today().date().strftime("%Y-%m-%d")
+today = "2018-3-26"
+#today = datetime.today().date().strftime("%Y-%m-%d")
+
 for cmt in cmt_list:
     try:
         tmp_close = pd.read_csv("../data_cl/"+cmt[:-4]+".csv",parse_dates=[0],index_col=0)
@@ -58,28 +60,31 @@ for cmt in cmt_list:
         tmp_update_vol.to_csv("../data_vol/"+cmt[:-4]+".csv")
         tmp_update_oi.to_csv("../data_oi/"+cmt[:-4]+".csv")
     else:
-        start_date = min([tmp_close.index[-1],tmp_open.index[-1],tmp_vol.index[-1],tmp_oi.index[-1]]).date().strftime("%Y-%m-%d")
+        start_date = (min([tmp_close.index[-1],tmp_open.index[-1],tmp_vol.index[-1],tmp_oi.index[-1]]).date() + timedelta(days=1)).strftime("%Y-%m-%d")
         end_date = today
-        tmp_update_cl,tmp_update_open,tmp_update_vol,tmp_update_oi = data_download(cmt,start_date,end_date)
-        if len(tmp_update_cl) > 1:
-            update_cnt_list = [x for x in list(tmp_update_cl.columns.values) if x not in list(tmp_close.columns.values)]
-            new_cnt_list = list(tmp_close.columns.values)
-            new_cnt_list.extend(update_cnt_list)
-            tmp_close_new = tmp_close.append(tmp_update_cl)
-            tmp_open_new = tmp_open.append(tmp_update_open)
-            tmp_vol_new = tmp_vol.append(tmp_update_vol)
-            tmp_oi_new = tmp_oi.append(tmp_update_oi)
-            tmp_close_new = tmp_close_new[new_cnt_list]
-            tmp_open_new = tmp_open_new[new_cnt_list]
-            tmp_vol_new = tmp_vol_new[new_cnt_list]
-            tmp_oi_new = tmp_oi_new[new_cnt_list]
-            tmp_close_new.to_csv("../data_cl/"+cmt[:-4]+".csv")
-            tmp_open_new.to_csv("../data_open/"+cmt[:-4]+".csv")
-            tmp_vol_new.to_csv("../data_vol/"+cmt[:-4]+".csv")
-            tmp_oi_new.to_csv("../data_oi/"+cmt[:-4]+".csv")
-            print cmt + "更新完毕"
+        if datetime.strptime(start_date,"%Y-%m-%d") > datetime.strptime(end_date,"%Y-%m-%d"):
+            print "日期错误，无法更新"
         else:
-            print cmt + "已更新，无需更新"
+            tmp_update_cl,tmp_update_open,tmp_update_vol,tmp_update_oi = data_download(cmt,start_date,end_date)
+            if len(tmp_update_cl) > 0:
+                update_cnt_list = [x for x in list(tmp_update_cl.columns.values) if x not in list(tmp_close.columns.values)]
+                new_cnt_list = list(tmp_close.columns.values)
+                new_cnt_list.extend(update_cnt_list)
+                tmp_close_new = tmp_close.append(tmp_update_cl)
+                tmp_open_new = tmp_open.append(tmp_update_open)
+                tmp_vol_new = tmp_vol.append(tmp_update_vol)
+                tmp_oi_new = tmp_oi.append(tmp_update_oi)
+                tmp_close_new = tmp_close_new[new_cnt_list]
+                tmp_open_new = tmp_open_new[new_cnt_list]
+                tmp_vol_new = tmp_vol_new[new_cnt_list]
+                tmp_oi_new = tmp_oi_new[new_cnt_list]
+                tmp_close_new.to_csv("../data_cl/"+cmt[:-4]+".csv")
+                tmp_open_new.to_csv("../data_open/"+cmt[:-4]+".csv")
+                tmp_vol_new.to_csv("../data_vol/"+cmt[:-4]+".csv")
+                tmp_oi_new.to_csv("../data_oi/"+cmt[:-4]+".csv")
+                print cmt + "更新完毕"
+            else:
+                print cmt + "已更新，无需更新"
     
         
         
