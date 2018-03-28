@@ -123,10 +123,8 @@ def main_cnt_update(main_cnt_df,decide_param=2):
 if __name__ == "__main__":
     main_cnt_df = pd.read_csv("../../data/main_cnt_total.csv",parse_dates=[0],index_col=0)
     update_main_df = main_cnt_update(main_cnt_df)
-    if np.isnan(update_main_df):
-        print "无更新"
-    else:
-        update_main_df.to_csv("../../data/main_cnt_total.csv",mode="a",header=None)
+
+    update_main_df.to_csv("../../data/main_cnt_total.csv",mode="a",header=None)
     
     
     

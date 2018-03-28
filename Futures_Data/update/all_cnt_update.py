@@ -13,8 +13,8 @@ w.start()
 
 
 cmt_list = pd.read_csv("../cmt_list/cmt_list.csv")
-#cmt_list = cmt_list["cmt"].tolist()
-cmt_list = ["SN.SHF"]
+cmt_list = cmt_list["cmt"].tolist()
+#cmt_list = ["SN.SHF"]
 
 def data_download(cmt,start_date,end_date):
     tmp_cnt_list = w.wset("futurecc","startdate="+start_date+";enddate="+end_date+";wind_code="+cmt+";field=wind_code")
@@ -41,8 +41,8 @@ def data_download(cmt,start_date,end_date):
     return tmp_update_cl,tmp_update_open,tmp_update_vol,tmp_update_oi
 
 last_update_date  = "2017-7-29"
-today = "2018-3-26"
-#today = datetime.today().date().strftime("%Y-%m-%d")
+#today = "2018-3-26"
+today = datetime.today().date().strftime("%Y-%m-%d")
 
 for cmt in cmt_list:
     try:

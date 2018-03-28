@@ -29,7 +29,7 @@ if __name__ == "__main__":
     
     cmt_list = pd.read_csv("../Futures_Data/cmt_list/cmt_daily_list.csv").loc[:,"cmt"].tolist()
     main_cnt_df = pd.read_csv("../Futures_Data/main_cnt/data/main_cnt_total.csv",parse_dates=[0],index_col=0)
-    report_date = "2018-03-22"
+    report_date = "2018-03-28"
     relative_data_path = "../Futures_Data"
     
     #判断数据更新情况
