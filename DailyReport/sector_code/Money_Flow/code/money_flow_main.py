@@ -16,9 +16,25 @@ import pandas as pd
 import numpy as np
 
 
+def money_flow_main(date,top_N):
+    d=main_contracts(date,top_N)
+    df_TopContractList = pd.DataFrame(d,index=1+np.arange(top_N)).T
+   
+    ## 计算资金流向
+    df = get_data(date,df_TopContractList)
+    df_g = df.groupby(df['commodity_name']).sum().reset_index()
+
+    ## 生成资金流向柱状图
+    image_name = PlotMoneyFlow(df_g,date)
+
+
+
+
+
+
 if __name__ == "__main__":
     ## 制作合约列表
-    date = '2018-01-30'
+    date = '2018-03-27'
     
     top = 2
     d=main_contracts(date,2)

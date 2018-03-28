@@ -1,15 +1,11 @@
 # -*- coding:utf-8 -*-
 
 import pandas as pd
-import numpy as np
-from WindPy import *
-import math
-from datetime import datetime
+from WindPy import w
 
-def get_data(date):
+def get_data(date,code_df):
     w.start()
     datestr = "tradeDate=" + date
-    code_df = pd.read_csv('../output/TopContractList.csv', encoding = 'gb2312', index_col = 0 )
     output_df = pd.DataFrame()
     passive_flow = []
     active_flow = []
@@ -20,9 +16,7 @@ def get_data(date):
     contract_num = len(code_df)
     not_NaN = code_df.notnull()
     for row_num in range(contract_num):
-        for col_num in range(top_num):
-            
-            i = row_num * top_num + col_num + 1
+        for col_num in range(top_num):            
             cnt_name = code_df.iloc[row_num,col_num]
             if not_NaN.iloc[row_num,col_num]:
                 data =  w.wss(cnt_name,"His_oichange, margin, contractmultiplier, His_close, pre_close, His_oi", datestr)

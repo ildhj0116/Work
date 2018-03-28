@@ -10,7 +10,7 @@ from Cnt2Cmt import Cnt2Cmt
 from WindPy import w 
 w.start()
 
-def CV_Compute(total_cnt,start_date,end_date,cmt_dict,filename):
+def CV_Compute(total_cnt,start_date,end_date,cmt_dict):
     """
     根据前面得到的所有品种历史合约表，在指定时间段内遍历每个交易日，筛选当日有效的合约，
     下载持仓量、收盘价和乘数数据并计算各品种的合约价值。然后再按板块分别归纳统计板块和总
@@ -48,7 +48,7 @@ def CV_Compute(total_cnt,start_date,end_date,cmt_dict,filename):
     Contract_Value_fmt.rename("fmt_CV",inplace=True)
     Contract_Value_nfmt.rename("nfmt_CV",inplace=True)
     Contract_Value_gld.rename("gld_CV",inplace=True)
-    Contract_Value = pd.concat([Contract_Value_total,Contract_Value_agri,Contract_Value_chem,\
+    Contract_Value_sector = pd.concat([Contract_Value_total,Contract_Value_agri,Contract_Value_chem,\
                                 Contract_Value_fmt,Contract_Value_nfmt,Contract_Value_gld],axis=1)
-    filename = '../output/'+filename
-    Contract_Value.to_csv(filename, encoding = 'gb2312')
+    
+    return Contract_Value_sector, Contract_Value_allcmt

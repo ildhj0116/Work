@@ -12,18 +12,9 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-cmt_list = pd.read_csv("../../Futures_Data/cmt_list/cmt_daily_list.csv").loc[:,"cmt"].tolist()
-main_cnt_df = pd.read_csv("../../Futures_Data/main_cnt/data/main_cnt_total.csv",parse_dates=[0],index_col=0)
 
-compute_date_str = "2018-03-22"
-compute_date = datetime.strptime(compute_date_str,"%Y-%m-%d")
 
-try:
-    main_cnt_list_today = main_cnt_df.loc[compute_date,:].copy()
-except:
-    print "主力合约列表无更新日期数据，不能进行计算"
-else:
-    del main_cnt_df
+def amplitude(main_cnt_list_today,cmt_list,compute_date_str):
     ATR_list = []
     pre_close_list = []
     for cmt in cmt_list:
@@ -39,7 +30,7 @@ else:
     df["amplitude"] = df["ATR"] / df["pre_close"]
     amp = df["amplitude"].sort_values(ascending=False).copy()
     
-    fig = plt.figure(1)
+    fig = plt.figure()
     axis = fig.add_subplot(111)
     amp.plot.bar(ax=axis,color=[plt.cm.hot(np.arange(0,5*len(amp),5))])
     axis.axhline(0, color='k')
