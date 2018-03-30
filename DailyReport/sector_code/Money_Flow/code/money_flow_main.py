@@ -16,17 +16,18 @@ import pandas as pd
 import numpy as np
 
 
-def money_flow_main(date,top_N):
+def money_flow_main(date,top_N,cmt_list):
     d=main_contracts(date,top_N)
     df_TopContractList = pd.DataFrame(d,index=1+np.arange(top_N)).T
    
     ## 计算资金流向
     df = get_data(date,df_TopContractList)
     df_g = df.groupby(df['commodity_name']).sum().reset_index()
-
+    cmt_list.index = [x[:-4] for x in cmt_list.index.tolist()]
+    df_g['commodity_name'] = cmt_list.loc[df_g['commodity_name'].tolist(),:]["Chinese"].tolist()
     ## 生成资金流向柱状图
-    image_name = PlotMoneyFlow(df_g,date)
-
+    fig_list = PlotMoneyFlow(df_g,date)
+    return fig_list
 
 
 

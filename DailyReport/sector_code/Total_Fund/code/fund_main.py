@@ -6,14 +6,14 @@ Created on Tue Jan 16 14:01:52 2018
 """
 from contract_code import contract_code
 from CV_Compute import CV_Compute
-from plotCV import plotCV_sector,plotCV_all
+from plotCV import plotCV_sector,plotCV_sector_one_graph,plotCV_all
 from WindPy import w 
 w.start()
 
-agri_cmt = ['A','C','CS','M','Y','P','JD','CF','SR','OI','RM']
+agri_cmt = ['A','C','CS','M','Y','P','JD','CF','SR','RM']
 chem_cmt = ['L','PP','V','TA','MA','BU','RU']
 fmt_cmt = ['RB','I','HC','J','JM','ZC','FG']
-nfmt_cmt = ['CU','NI','AL','ZN','SN']
+nfmt_cmt = ['CU','NI','AL','ZN']
 gld_cmt = ['AU','AG']
 all_cmt = agri_cmt + chem_cmt + fmt_cmt + nfmt_cmt + gld_cmt
 cmt_dict = {"agri_cmt":agri_cmt, "chem_cmt":chem_cmt, "fmt_cmt":fmt_cmt, "nfmt_cmt":nfmt_cmt,
@@ -21,19 +21,21 @@ cmt_dict = {"agri_cmt":agri_cmt, "chem_cmt":chem_cmt, "fmt_cmt":fmt_cmt, "nfmt_c
 
 filename_sector = "ContractValue.csv"
 
-def fund_main(start_date,end_date):
+def fund_main(start_date,end_date,cmt_list):
     #制作合约列表
     total_cnt = contract_code(cmt_dict,start_date,end_date) 
    
     #根据下载的合约列表在所给时间段中每日下载持仓量、收盘价和乘数并计算合约价值，并存入csv文件中
     Contract_Value_sector, Contract_Value_allcmt = CV_Compute(total_cnt,start_date,end_date,cmt_dict)
-        
+    cmt_list.index = [x[:-4] for x in cmt_list.index.tolist()]
+    Contract_Value_allcmt.columns = cmt_list.loc[Contract_Value_allcmt.columns.tolist(),:]["Chinese"].tolist()    
+    
     #画总合约价值和版块合约价值图（2*3 subplots）并存储
-    plotCV_sector(Contract_Value_sector)
+    fig_sector = plotCV_sector_one_graph(Contract_Value_sector)
     
     #画所有品种资金沉淀
-    plotCV_all(Contract_Value_allcmt)
-
+    fig_allcmt = plotCV_all(Contract_Value_allcmt)
+    return [fig_sector,fig_allcmt]
 
 
 

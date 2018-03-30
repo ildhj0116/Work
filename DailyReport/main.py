@@ -11,6 +11,7 @@ sys.path.append("./sector_code/OI_Vol")
 sys.path.append("./sector_code/Money_Flow/code")
 sys.path.append("./sector_code/Total_Fund/code")
 import os
+import copy
 from NanHua import NanHua
 from cmt_ret import cmt_ret_rank
 from volatility import amplitude
@@ -21,17 +22,25 @@ from money_flow_main import money_flow_main
 from WindPy import w
 import pandas as pd
 from datetime import datetime
+import matplotlib.pyplot as plt
+plt.rcParams['font.sans-serif'] = ['SimHei']
+plt.rcParams['axes.unicode_minus'] = False
 w.start()
 
 
 
 if __name__ == "__main__":
     
-    cmt_list = pd.read_csv("../Futures_Data/cmt_list/cmt_daily_list.csv").loc[:,"cmt"].tolist()
+    cmt_daily_list = pd.read_csv("../Futures_Data/cmt_list/cmt_daily_list.csv")
+    cmt_chinese = pd.read_csv("../Futures_Data/cmt_list/cmt_list_with_Chinese.csv",index_col=0,encoding = 'gb2312')
+    cmt_list = cmt_chinese.loc[cmt_daily_list.loc[:,"cmt"].tolist(),:].copy()
+#    cmt_list = pd.DataFrame({"cmt":{"IC.CFE":"IC"}})
     main_cnt_df = pd.read_csv("../Futures_Data/main_cnt/data/main_cnt_total.csv",parse_dates=[0],index_col=0)
-    report_date = "2018-03-28"
+    report_date = "2018-03-29"
     relative_data_path = "../Futures_Data"
-    
+    title_list = ([u"品种日收益",u"品种周收益",u"品种月收益",u"品种日振幅",u"品种日增仓",u"品种日减仓",u"会员持仓占比",u"多头日占比变动",
+                   u"多头周占比变动",u"多头月占比变动",u"空头日占比变动",u"空头周占比变动",u"空头月占比变动",u"板块沉淀资金",u"品种沉淀资金",
+                   u"总资金流向",u"主动资金流向",u"被动资金流向"])
     #判断数据更新情况
     report_date_time = datetime.strptime(report_date,"%Y-%m-%d")
     try:
@@ -40,33 +49,49 @@ if __name__ == "__main__":
         print "主力合约列表无更新日期数据，不能进行计算"
     else:
         del main_cnt_df
+        fig_list = []
         # 1、品种强弱
         #   (1)半年内南华商品指数价格折线图
         #   (2)半年内南华商品指数收益率折线图
-        start_date_NanHua = "2017-09-24"
-        NanHua(start_date_NanHua,report_date)
+#        start_date_NanHua = "2017-09-24"
+#        tmp_fig_list = NanHua(start_date_NanHua,report_date)
+#        fig_list.extend(tmp_fig_list)
+#        
         #   (3)各品种日、月、周收益率排名
-        cmt_ret_rank(main_cnt_list_today,cmt_list,relative_data_path)
+        tmp_fig_list = cmt_ret_rank(main_cnt_list_today,cmt_list,relative_data_path)
+        fig_list.extend(tmp_fig_list)
+
         #   (4)新高新低
         
         # 2、波动率提示：品种日振幅
-        amplitude(main_cnt_list_today,cmt_list,report_date)
+        tmp_fig_list = amplitude(main_cnt_list_today,cmt_list,report_date)
+        fig_list.extend(tmp_fig_list)
+
         # 3、持仓、成交提示
-        vol_oi_indicator(main_cnt_list_today,cmt_list,report_date,relative_data_path)
+        tmp_fig_list = vol_oi_indicator(main_cnt_list_today,cmt_list,report_date,relative_data_path)
+        fig_list.extend(tmp_fig_list)
+
         # 4、资金提示
         #   (1)沉淀资金
         start_date_fund = "2017-09-01"
-        fund_main(start_date_fund,report_date)
+        tmp_fig_list = fund_main(start_date_fund,report_date,copy.deepcopy(cmt_list))
+        fig_list.extend(tmp_fig_list)
+        
         #   (2)资金流向
         top_N = 2
-        money_flow_main(report_date,top_N)
+        tmp_fig_list = money_flow_main(report_date,top_N,cmt_list)
+        fig_list.extend(tmp_fig_list)
         
-        #输出
+        # 输出
         if os.path.exists("output/" + report_date):
             print report_date + "已更新过，文件夹重复"
         else:
             os.makedirs("output/" + report_date)
-        
+            for i in range(len(fig_list)):
+                title = title_list[i]
+                fig = fig_list[i]
+                fig.savefig("output/" + report_date + '/' + title + ".jpg",bbox_inches='tight')
+                
         
         
         

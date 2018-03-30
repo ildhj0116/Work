@@ -10,8 +10,7 @@ def PlotMoneyFlow(data,date):
     fig_num = 3
     fig_xlabel = [u'总资金流量',u'主动资金流量',u'被动资金流量']
     fig_title = [u'期货资金流向图(单位：亿元)',u'期货资金主动流入(单位：亿元)',u'期货资金被动流入(单位：亿元)']
-    fig_filename = [u'期货资金流向图',u'期货资金主动流入',u'期货资金被动流入']
-    
+    fig_list = []
     for i in range(fig_num):
         data = data.sort_values(by=data.columns[fig_num - i], ascending=False)
         data = data.dropna()
@@ -44,4 +43,5 @@ def PlotMoneyFlow(data,date):
         plt.xlim(-x_max*1.4, x_max*1.4)
         plt.ylim(index[0]-bar_width/1.5,index[-1]+bar_width/1.5)
         axis.grid(linestyle='--', axis='y', zorder=0)
-    return fig_filename
+        fig_list.append(fig)
+    return fig_list
