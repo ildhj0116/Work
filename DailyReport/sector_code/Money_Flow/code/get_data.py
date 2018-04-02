@@ -19,7 +19,7 @@ def get_data(date,code_df):
         for col_num in range(top_num):            
             cnt_name = code_df.iloc[row_num,col_num]
             if not_NaN.iloc[row_num,col_num]:
-                data =  w.wss(cnt_name,"His_oichange, margin, contractmultiplier, His_close, pre_close, His_oi", datestr)
+                data =  w.wss(cnt_name,"oi_chg, margin, contractmultiplier, close, pre_close, oi", datestr)
                 oi_today = data.Data[5][0]
                 oi_diff = data.Data[0][0]
                 oi_last = oi_today - oi_diff
@@ -44,5 +44,21 @@ def get_data(date,code_df):
     output_df['contract'] = contracts
     return output_df
 
+def get_data_local(start_date,end_date,cmt,cl_df,oi_df):
+    start_cl = cl_df.loc[start_date,:].dropna().copy()
+    end_cl = cl_df.loc[end_date,:].dropna().copy()
+    start_oi = oi_df.loc[start_date,:].dropna().copy()
+    end_oi = oi_df.loc[end_date,:].dropna().copy()
+    data_df = pd.concat([start_cl,start_oi,end_cl,end_oi],axis=1)
+    data_df.columns = ["start_cl","start_oi","end_cl","end_oi"]
+    basic_info = w.wss(",".join(data_df.index.tolist()), "margin, contractmultiplier")
+    basic_info = pd.DataFrame(basic_info.Data,index=basic_info.Fields,columns=basic_info.Codes).T
+    data_df = pd.concat([data_df,basic_info],axis=1)
+    data_df["passive_fund"] = (data_df["end_cl"] - data_df["start_cl"]) * data_df["start_oi"] \
+                                * data_df["MARGIN"] / 100 * data_df["CONTRACTMULTIPLIER"] / 100000000.0
+    data_df["active_fund"] = (data_df["end_oi"] - data_df["start_oi"]) * data_df["end_cl"] \
+                                * data_df["MARGIN"] / 100 * data_df["CONTRACTMULTIPLIER"] / 100000000.0
+    data_df["fund"] = data_df["passive_fund"] + data_df["active_fund"]
+    return round(data_df["passive_fund"].sum(),2), round(data_df["active_fund"].sum(),2), round(data_df["fund"].sum(),2)
 
 

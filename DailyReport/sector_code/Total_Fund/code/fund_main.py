@@ -21,7 +21,7 @@ cmt_dict = {"agri_cmt":agri_cmt, "chem_cmt":chem_cmt, "fmt_cmt":fmt_cmt, "nfmt_c
 
 filename_sector = "ContractValue.csv"
 
-def fund_main(start_date,end_date,cmt_list):
+def fund_main(start_date,end_date,cmt_list,date_interval):
     #制作合约列表
     total_cnt = contract_code(cmt_dict,start_date,end_date) 
    
@@ -29,7 +29,8 @@ def fund_main(start_date,end_date,cmt_list):
     Contract_Value_sector, Contract_Value_allcmt = CV_Compute(total_cnt,start_date,end_date,cmt_dict)
     cmt_list.index = [x[:-4] for x in cmt_list.index.tolist()]
     Contract_Value_allcmt.columns = cmt_list.loc[Contract_Value_allcmt.columns.tolist(),:]["Chinese"].tolist()    
-    
+    Contract_Value_sector = Contract_Value_sector.iloc[-date_interval:,:].copy()
+    Contract_Value_allcmt = Contract_Value_allcmt.iloc[-date_interval:,:].copy()
     #画总合约价值和版块合约价值图（2*3 subplots）并存储
     fig_sector = plotCV_sector_one_graph(Contract_Value_sector)
     

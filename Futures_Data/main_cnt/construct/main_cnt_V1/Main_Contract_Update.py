@@ -10,10 +10,13 @@ import numpy as np
 from datetime import datetime,timedelta
 from WindPy import w
 import copy
+w.start()
 
 def main_cnt_update(main_cnt_df,decide_param=2):
     cmt_list = main_cnt_df.columns.tolist()
     today = datetime.today()
+    if today.hour < 15:
+        today -= timedelta(days=1)
     #若今天的日期小于等于已存在的日期，则一定是日期出现问题或不需要更新
     if today <= main_cnt_df.index[-1]:
         print "更新日期错误"
