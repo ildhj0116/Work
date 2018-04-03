@@ -15,17 +15,17 @@ from matplotlib.ticker import FuncFormatter
 
 
 
-def amplitude(main_cnt_list_today,cmt_list,compute_date_str):
+def amplitude(main_cnt_list_today,N_days,cmt_list,compute_date_str):
     ATR_list = []
     pre_close_list = []
     fig_list = []
     for cmt in cmt_list.index.tolist():
         main_cnt = main_cnt_list_today.loc[cmt]
-        tmp_dl_data = w.wsd(main_cnt, "high,low,close", "ED-15TD", compute_date_str, "")
+        tmp_dl_data = w.wsd(main_cnt, "high,low,close", "ED-" + str(N_days+1) + "TD", compute_date_str, "")
         high = tmp_dl_data.Data[0]
         low = tmp_dl_data.Data[1]
         close = tmp_dl_data.Data[2]
-        ATR = ta.ATR(np.array(high),np.array(low),np.array(close),14)
+        ATR = ta.ATR(np.array(high),np.array(low),np.array(close),N_days)
         ATR_list.append(ATR[-1])
         pre_close_list.append(close[-2])
     df = pd.DataFrame([ATR_list,pre_close_list],columns=cmt_list.index.tolist(),index=["ATR","pre_close"]).T
@@ -42,7 +42,7 @@ def amplitude(main_cnt_list_today,cmt_list,compute_date_str):
     axis.axhline(0, color='k')
     plt.xlabel(u"品种",fontsize=15)
     plt.ylabel(u"振幅",fontsize=15)
-    plt.title(u"主力合约价格日振幅",fontsize=20)
+    plt.title(u"主力合约价格过去" + str(N_days) + u"日相对平均真实振幅",fontsize=20)
     plt.xticks(fontsize=12)
     plt.yticks(fontsize=15)
     axis.yaxis.set_major_formatter(FuncFormatter(lambda y, _: '{:.1%}'.format(y)))

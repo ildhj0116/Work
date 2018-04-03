@@ -54,11 +54,14 @@ def get_data_local(start_date,end_date,cmt,cl_df,oi_df):
     basic_info = w.wss(",".join(data_df.index.tolist()), "margin, contractmultiplier")
     basic_info = pd.DataFrame(basic_info.Data,index=basic_info.Fields,columns=basic_info.Codes).T
     data_df = pd.concat([data_df,basic_info],axis=1)
+    data_df.fillna(0,inplace=True)
     data_df["passive_fund"] = (data_df["end_cl"] - data_df["start_cl"]) * data_df["start_oi"] \
                                 * data_df["MARGIN"] / 100 * data_df["CONTRACTMULTIPLIER"] / 100000000.0
     data_df["active_fund"] = (data_df["end_oi"] - data_df["start_oi"]) * data_df["end_cl"] \
                                 * data_df["MARGIN"] / 100 * data_df["CONTRACTMULTIPLIER"] / 100000000.0
     data_df["fund"] = data_df["passive_fund"] + data_df["active_fund"]
-    return round(data_df["passive_fund"].sum(),2), round(data_df["active_fund"].sum(),2), round(data_df["fund"].sum(),2)
+    data_df["fund_start"] = data_df["start_cl"] * data_df["start_oi"] * data_df["MARGIN"] / 100 * data_df["CONTRACTMULTIPLIER"] / 100000000.0
+    fund_pct_chg =  round(round(data_df["fund"].sum(),2) / round(data_df["fund_start"].sum(),2),2)
+    return round(data_df["passive_fund"].sum(),2), round(data_df["active_fund"].sum(),2), round(data_df["fund"].sum(),2), fund_pct_chg
 
 

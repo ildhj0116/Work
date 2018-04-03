@@ -7,9 +7,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def PlotMoneyFlow(data,interval,date):    
-    fig_num = 3
-    fig_xlabel = [u'总资金流量',u'主动资金流量',u'被动资金流量']
-    fig_title = [u'期货资金流向图(单位：亿元)',u'期货资金主动流入(单位：亿元)',u'期货资金被动流入(单位：亿元)']
+    fig_num = 4
+    fig_xlabel = [u"资金流量变化率",u'总资金流量',u'主动资金流量',u'被动资金流量']
+    fig_title = [u"期货资金流向变化率",u'期货资金流向图(单位：亿元)',u'期货资金主动流入(单位：亿元)',u'期货资金被动流入(单位：亿元)']
     fig_list = []
     for i in range(fig_num):
         data = data.sort_values(by=data.columns[fig_num - i], ascending=False)
@@ -26,12 +26,20 @@ def PlotMoneyFlow(data,interval,date):
             width = rect.get_width()
             #x = rect.get_x()
             y = rect.get_y()
-            if width < 0:
-                plt.text(width*1.1 - 0.2  , y-0.1, width, ha = 'center', va = 'bottom',fontsize=15)
-                rect.set_color('grey')
+            if i!= 0:
+                if width < 0:
+                    plt.text(width*1.1 - 0.2  , y-0.1, width, ha = 'center', va = 'bottom',fontsize=15)
+                    rect.set_color('grey')
+                else:
+                    plt.text(width*1.1 + 0.2 , y-0.1, width, ha = 'center', va = 'bottom',fontsize=15)
+                    rect.set_color('red')
             else:
-                plt.text(width*1.1 + 0.2 , y-0.1, width, ha = 'center', va = 'bottom',fontsize=15)
-                rect.set_color('red')
+                if width < 0:
+                    plt.text(width*1.1 - 0.02  , y-0.1, width, ha = 'center', va = 'bottom',fontsize=15)
+                    rect.set_color('grey')
+                else:
+                    plt.text(width*1.1 + 0.02 , y-0.1, width, ha = 'center', va = 'bottom',fontsize=15)
+                    rect.set_color('red')
         	# print rect.get_x() > 0
         
         plt.yticks(index, data['commodity_name'],fontsize=15)
