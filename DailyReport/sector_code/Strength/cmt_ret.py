@@ -132,8 +132,7 @@ def cmt_ret_rank_date(main_cnt_list_today,cmt_list,relative_data_path,start_date
     plt.xticks(fontsize=12)
     plt.yticks(fontsize=15)
     fig_list.append(fig)
-    
-    
+        
     return fig_list,stat_head_df,stat_tail_df
 
 
