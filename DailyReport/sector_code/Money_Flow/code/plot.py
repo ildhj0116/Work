@@ -6,7 +6,7 @@ plt.rcParams['axes.unicode_minus'] = False
 import numpy as np
 import matplotlib.pyplot as plt
 
-def PlotMoneyFlow(data,interval,date):    
+def PlotMoneyFlow(data,date,name_of_date):    
     fig_num = 4
     fig_xlabel = [u"资金流量变化率",u'总资金流量',u'主动资金流量',u'被动资金流量']
     fig_title = [u"期货资金流向变化率",u'期货资金流向图(单位：亿元)',u'期货资金主动流入(单位：亿元)',u'期货资金被动流入(单位：亿元)']
@@ -46,7 +46,7 @@ def PlotMoneyFlow(data,interval,date):
         plt.xticks(fontsize=15)
         plt.xlabel(fig_xlabel[i],fontsize=15)
         plt.ylabel(u'合约品种',fontsize=15)
-        plt.title(date + "  " + str(interval) + u"日" + fig_title[i],fontsize=20)
+        plt.title(name_of_date + fig_title[i],fontsize=20)
         x_max = max(abs(data[data.columns[fig_num - i]].iloc[-1]),abs(data[data.columns[fig_num - i]].iloc[0]))
         plt.xlim(-x_max*1.4, x_max*1.4)
         plt.ylim(index[0]-bar_width/1.5,index[-1]+bar_width/1.5)

@@ -13,7 +13,8 @@ import numpy as np
 
 if __name__ == "__main__":
     main_cnt_df = pd.read_csv("../../Futures_Data/main_cnt/data/main_cnt_total.csv",parse_dates=[0],index_col=0)
-    cmt_list = ["C.DCE","M.DCE"]
+#    cmt_list = ["IC.CFE"]
+    cmt_list = main_cnt_df.columns.tolist()
     smoothed_series = []
     for cmt in cmt_list:
         cnt_df = pd.read_csv("../../Futures_Data/data_cl/" + cmt[:-4]+".csv",parse_dates=[0],index_col=0)
