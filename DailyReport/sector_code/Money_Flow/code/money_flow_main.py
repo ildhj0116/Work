@@ -30,15 +30,7 @@ def money_flow_main(date,top_N,cmt_list,interval=1):
     fig_list = PlotMoneyFlow(df_g,date,name_of_date)
     return fig_list
 
-def money_flow_local_main(start_date,end_date,cmt_list,interval,relative_data_path):
-    
-   
-#    ## 计算资金流向
-#    df = get_data(date,df_TopContractList)
-#    df_g = df.groupby(df['commodity_name']).sum().reset_index()
-#    cmt_list.index = [x[:-4] for x in cmt_list.index.tolist()]
-#    df_g['commodity_name'] = cmt_list.loc[df_g['commodity_name'].tolist(),:]["Chinese"].tolist()
-#    ## 生成资金流向柱状图
+def money_flow_local_main(end_date,cmt_list,interval,relative_data_path):
     fig_list = []
     passive_list = []
     active_list = []
@@ -48,6 +40,7 @@ def money_flow_local_main(start_date,end_date,cmt_list,interval,relative_data_pa
     for cmt in cmt_list.index.tolist():
         tmp_cl = pd.read_csv(relative_data_path + "/data_cl/"+cmt[:-4]+".csv",parse_dates=[0],index_col=0) #相对地址有问题
         tmp_oi = pd.read_csv(relative_data_path + "/data_oi/"+cmt[:-4]+".csv",parse_dates=[0],index_col=0) 
+        start_date = tmp_cl.index[-(interval+1)]
         tmp_passive, tmp_active, tmp_total, tmp_pct_chg = get_data_local(start_date,end_date,cmt,tmp_cl,tmp_oi)
         passive_list.append(tmp_passive)
         active_list.append(tmp_active)
@@ -66,8 +59,8 @@ def money_flow_local_main(start_date,end_date,cmt_list,interval,relative_data_pa
     tail_chg_list = fund_df.sort_values(by=["fund_chg"],ascending=False).tail().loc[:,"commodity_name"].tolist()
     head_chg_series = pd.Series(head_chg_list,name=str(interval) + u"日资金流向变化率")
     tail_chg_series = pd.Series(tail_chg_list,name=str(interval) + u"日资金流向变化率")
-    name_of_date = date + str(interval) + u"日"
-    fig_list = PlotMoneyFlow(df_g,date,name_of_date)
+    
+    fig_list = PlotMoneyFlow(fund_df,end_date,end_date)
     return fig_list,head_fund_series,tail_fund_series,head_chg_series,tail_chg_series
 
 def money_flow_local_date_main(start_date,end_date,cmt_list,relative_data_path):

@@ -4,6 +4,7 @@ Created on Wed Mar 28 14:05:04 2018
 
 @author: Administrator
 """
+
 import sys
 sys.path.append("./sector_code/Strength")
 sys.path.append("./sector_code/Volatility")
@@ -37,8 +38,8 @@ if __name__ == "__main__":
     cmt_list.drop(["IC.CFE","IF.CFE","IH.CFE","T.CFE","TF.CFE"],inplace=True)
 #    cmt_list = pd.DataFrame({"cmt":{"IC.CFE":"IC"}})
     main_cnt_df = pd.read_csv("../Futures_Data/main_cnt/data/main_cnt_total.csv",parse_dates=[0],index_col=0)
-    report_date = "2018-04-03"
-    mode = "one_date"
+    report_date = "2018-04-09"
+    mode = "day"
     #mode = "day"
     
     
@@ -57,66 +58,85 @@ if __name__ == "__main__":
         print "主力合约列表无更新日期数据，不能进行计算"
     else:
         fig_list = []
-        head_df = pd.DataFrame()
-        tail_df = pd.DataFrame()
+        if mode in ["one_date","week"]:
+            head_df = pd.DataFrame()
+            tail_df = pd.DataFrame()
         # 1、品种强弱
         #   (1)半年内南华商品指数价格折线图
         #   (2)半年内南华商品指数收益率折线图
 
         #   (3)各品种日、月、周收益率排名
-        start_date = "2018-01-02"
-        end_date = "2018-03-30"
-        tmp_fig_list,tmp_head_df,tmp_tail_df = cmt_ret_rank_date(main_cnt_list_today,cmt_list,relative_data_path,start_date,end_date)
-        fig_list.extend(tmp_fig_list)
-        head_df = pd.concat([head_df,tmp_head_df],axis=1)
-        tail_df = pd.concat([tail_df,tmp_tail_df],axis=1)
-        
-        # 2、波动率提示：品种日振幅
-#        N_list = [5,20]
+#        start_date = "2018-01-02"
+#        end_date = "2018-03-30"
+#        if mode == "one_date":
+#            tmp_fig_list,tmp_head_df,tmp_tail_df = cmt_ret_rank_date(main_cnt_list_today,cmt_list,relative_data_path,
+#                                                                     start_date,end_date)
+#            head_df = pd.concat([head_df,tmp_head_df],axis=1)
+#            tail_df = pd.concat([tail_df,tmp_tail_df],axis=1)
+#        else:
+#            tmp_fig_list,tmp_head_df,tmp_tail_df = cmt_ret_rank(main_cnt_list_today,cmt_list,relative_data_path)                                                                     
+#        fig_list.extend(tmp_fig_list)
+#
+#        
+#        # 2、波动率提示：品种日振幅
+#        if mode == "week":
+#            N_list = [5,20]
+#        elif mode == "day":
+#            N_list = [1]
+#        else:
+#            N_list = []
 #        for N_days in N_list:
 #            tmp_fig_list = amplitude(main_cnt_list_today,N_days,cmt_list,report_date)
 #            fig_list.extend(tmp_fig_list)
 #
 #        # 3、持仓、成交提示
-#        if mode != "week":
+#        if mode == "day":
 #            tmp_fig_list = vol_oi_indicator(main_cnt_list_today,cmt_list,report_date,relative_data_path)
 #            fig_list.extend(tmp_fig_list)
 #
-        # 4、资金提示
-        #   (1)沉淀资金
-        start_date_fund = "2018-01-02"
-        end_date = "2018-03-30"
-        date_interval = 20
-        #tmp_fig_list = fund_main_weekly(start_date_fund,report_date,copy.deepcopy(cmt_list),date_interval)
-        tmp_fig_list = fund_main_date(start_date_fund,report_date,copy.deepcopy(cmt_list))
-        fig_list.extend(tmp_fig_list)
+#        # 4、资金提示
+#        #   (1)沉淀资金
+#        start_date_fund = "2018-01-02"
+#        end_date = "2018-03-30"
+#        date_interval = 20
+#        if mode == "week":
+#            tmp_fig_list = fund_main_weekly(start_date_fund,report_date,copy.deepcopy(cmt_list),date_interval)
+#        elif mode == "one_date":
+#            tmp_fig_list = fund_main_date(start_date_fund,report_date,copy.deepcopy(cmt_list))
+#        elif mode == "day":
+#            tmp_fig_list = fund_main(start_date_fund,report_date,copy.deepcopy(cmt_list))
+#        fig_list.extend(tmp_fig_list)
         
         #   (2)资金流向
         top_N = 2
         start_date = "2018-01-02"
-        end_date = "2018-03-30"
-        #end_date = report_date
-        interval_list = [5,20]
-        head_list = []
-        tail_list = []
-        tmp_fig_list,tmp_head_fund,tmp_tail_fund,tmp_head_chg,tmp_tail_chg = money_flow_local_date_main(start_date,end_date,cmt_list,
-                                                                                                        relative_data_path)
-        fig_list.extend(tmp_fig_list)            
-        head_df = pd.concat([head_df,tmp_head_fund,tmp_head_chg],axis=1)
-        tail_df = pd.concat([tail_df,tmp_tail_fund,tmp_tail_chg],axis=1)                                                                                                       
-#        for interval in interval_list:
-#            #start_date_index = main_cnt_df.index.tolist().index(report_date_time) - interval
-#            #start_date = main_cnt_df.index[start_date_index].strftime("%Y-%m-%d")
-#            
-#            tmp_fig_list,tmp_head_fund,tmp_tail_fund,tmp_head_chg,tmp_tail_chg = money_flow_local_main(start_date,end_date,cmt_list,
-#                                                                                                       interval,relative_data_path)
-##            tmp_fig_list = money_flow_main(end_date,top_N,cmt_list)
-#            fig_list.extend(tmp_fig_list)            
-#            head_df = pd.concat([head_df,tmp_head_fund,tmp_head_chg],axis=1)
-#            tail_df = pd.concat([tail_df,tmp_tail_fund,tmp_tail_chg],axis=1)
-#        
-##        
-#        # 输出
+        if mode == "one_date":
+            end_date = "2018-03-30"
+        else:
+            end_date = report_date
+            
+        if mode == "one_date":
+            tmp_fig_list,tmp_head_fund,tmp_tail_fund,tmp_head_chg,tmp_tail_chg = money_flow_local_date_main(start_date,end_date,
+                                                                                                            cmt_list,relative_data_path)                                                                                                            
+            head_df = pd.concat([head_df,tmp_head_fund,tmp_head_chg],axis=1)
+            tail_df = pd.concat([tail_df,tmp_tail_fund,tmp_tail_chg],axis=1)
+        else:
+            if mode == "week":
+                interval_list = [5,20]  
+            else:
+                interval_list = [1]
+            for interval in interval_list:
+                #start_date_index = main_cnt_df.index.tolist().index(report_date_time) - interval
+                #start_date = main_cnt_df.index[start_date_index].strftime("%Y-%m-%d")
+                
+                tmp_fig_list,tmp_head_fund,tmp_tail_fund,tmp_head_chg,tmp_tail_chg = money_flow_local_main(end_date,cmt_list,
+                                                                                                           interval,relative_data_path)
+                fig_list.extend(tmp_fig_list)            
+                head_df = pd.concat([head_df,tmp_head_fund,tmp_head_chg],axis=1)
+                tail_df = pd.concat([tail_df,tmp_tail_fund,tmp_tail_chg],axis=1)
+        
+        
+        # 输出
         if mode == "day":
             if os.path.exists("output/Daily/" + report_date):
                 print report_date + "已更新过，文件夹重复"

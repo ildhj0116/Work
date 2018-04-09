@@ -40,8 +40,8 @@ def data_download(cmt,start_date,end_date):
     tmp_update_oi = pd.concat(tmp_download_oi_list,axis=1)
     return tmp_update_cl,tmp_update_open,tmp_update_vol,tmp_update_oi
 
-last_update_date  = "2017-04-02"
-today = "2018-04-03"
+last_update_date  = "2017-04-03"
+today = "2018-04-09"
 #today = datetime.today().date().strftime("%Y-%m-%d")
 
 for cmt in cmt_list:

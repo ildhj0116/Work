@@ -57,7 +57,7 @@ def main_cnt_update(main_cnt_df,decide_param=2):
                 if first_trade_date in oi_data.index:
                     oi_data.loc[oi_data.index<first_trade_date,cnt] = 0
             
-           #
+           
            
             
             
