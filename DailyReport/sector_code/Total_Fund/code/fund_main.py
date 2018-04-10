@@ -48,9 +48,9 @@ def fund_main_weekly(start_date,end_date,cmt_list,date_interval):
     Contract_Value_sector = Contract_Value_sector.iloc[-date_interval:,:].copy()
     Contract_Value_allcmt = Contract_Value_allcmt.iloc[-date_interval:,:].copy()
     #画总合约价值和版块合约价值图（2*3 subplots）并存储
-    fig_sector_one_graph = plotCV_sector_one_graph(Contract_Value_sector)
+    #fig_sector_one_graph = plotCV_sector_one_graph(Contract_Value_sector)
     fig_sector = plotCV_sector(Contract_Value_sector)
-    return [fig_sector_one_graph,fig_sector]
+    return [fig_sector]
 
 def fund_main_date(start_date,end_date,cmt_list):
     #制作合约列表

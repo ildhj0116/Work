@@ -32,7 +32,12 @@ def amplitude(main_cnt_list_today,N_days,cmt_list,compute_date_str):
     df["amplitude"] = df["ATR"] / df["pre_close"]
     amp = df["amplitude"].sort_values(ascending=False).copy()
     amp.index = cmt_list.loc[amp.index.tolist(),:]["Chinese"].tolist()
-
+    head = amp.head().index.tolist()
+    tail = amp.tail().index.tolist().reverse()
+    stat_head_df = pd.Series(head,name=u"振幅").T
+    stat_tail_df = pd.Series(tail,name=u"振幅").T
+    
+    
     fig = plt.figure(figsize=(19.2,10.8), dpi=100)
     axis = fig.add_subplot(111)
     amp.plot.bar(ax=axis,color=[plt.cm.hot(np.arange(0,5*len(amp),5))])
@@ -47,4 +52,4 @@ def amplitude(main_cnt_list_today,N_days,cmt_list,compute_date_str):
     plt.yticks(fontsize=15)
     axis.yaxis.set_major_formatter(FuncFormatter(lambda y, _: '{:.1%}'.format(y)))
     fig_list.append(fig)
-    return fig_list
+    return fig_list,stat_head_df,stat_tail_df

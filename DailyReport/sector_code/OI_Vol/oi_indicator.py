@@ -102,6 +102,18 @@ def vol_oi_indicator(main_cnt_list_today,cmt_list,compute_date_str,relative_data
     oi_rank_short_1d.index = cmt_list.loc[oi_rank_short_1d.index.tolist(),:]["Chinese"].tolist()
     oi_rank_short_1w.index = cmt_list.loc[oi_rank_short_1w.index.tolist(),:]["Chinese"].tolist()
     oi_rank_short_1m.index = cmt_list.loc[oi_rank_short_1m.index.tolist(),:]["Chinese"].tolist()
+    head_oi_rank_long_1d = oi_rank_long_1d.head().index.tolist()
+    tail_oi_rank_long_1d = oi_rank_long_1d.tail().index.tolist().reverse()
+    head_oi_rank_short_1d = oi_rank_short_1d.head().index.tolist()
+    tail_oi_rank_short_1d = oi_rank_short_1d.tail().index.tolist().reverse()
+    head_oi_rank_long_1w = oi_rank_long_1w.head().index.tolist()
+    tail_oi_rank_long_1w = oi_rank_long_1w.tail().index.tolist().reverse()
+    head_oi_rank_short_1w = oi_rank_short_1w.head().index.tolist()
+    tail_oi_rank_short_1w = oi_rank_short_1w.tail().index.tolist().reverse()
+    head_oi_rank_long_1m = oi_rank_long_1m.head().index.tolist()
+    tail_oi_rank_long_1m = oi_rank_long_1m.tail().index.tolist().reverse()
+    head_oi_rank_short_1m = oi_rank_short_1m.head().index.tolist()
+    tail_oi_rank_short_1m = oi_rank_short_1m.tail().index.tolist().reverse()
     #成交、持仓量变化比率
     vol_chg_df = (vol_df - vol_df.shift(1)) / vol_df.shift(1)
     vol_chg = vol_chg_df.iloc[-1,:]    
@@ -111,9 +123,17 @@ def vol_oi_indicator(main_cnt_list_today,cmt_list,compute_date_str,relative_data
     vol_chg_negative.sort_values(ascending=True,inplace=True)
     vol_chg_positive.index = cmt_list.loc[vol_chg_positive.index.tolist(),:]["Chinese"].tolist()
     vol_chg_negative.index = cmt_list.loc[vol_chg_negative.index.tolist(),:]["Chinese"].tolist()
- 
-
+    head_vol_chg_positive = vol_chg_positive.head().index.tolist()
+    tail_vol_chg_positive = vol_chg_positive.tail().index.tolist().reverse()
+    head_vol_chg_negative = vol_chg_negative.head().index.tolist()
+    tail_vol_chg_negative = vol_chg_negative.tail().index.tolist().reverse()
     
+    stat_head_df = pd.DataFrame([head_vol_chg_positive,head_vol_chg_negative,head_oi_rank_long_1d,head_oi_rank_short_1d,head_oi_rank_long_1w,
+                                 head_oi_rank_short_1w,head_oi_rank_long_1m,head_oi_rank_short_1m],index=[u"品种日增仓",u"品种日减仓","日多头持仓占比变化",
+                                u"日空头持仓占比变化",u"周多头持仓占比变化",u"周空头持仓占比变化",u"月多头持仓占比变化",u"月空头持仓占比变化"]).T
+    stat_tail_df = pd.DataFrame([tail_vol_chg_positive,tail_vol_chg_negative,tail_oi_rank_long_1d,tail_oi_rank_short_1d,tail_oi_rank_long_1w,
+                                 tail_oi_rank_short_1w,tail_oi_rank_long_1m,tail_oi_rank_short_1m],index=[u"品种日增仓",u"品种日减仓","日多头持仓占比变化",
+                                u"日空头持仓占比变化",u"周多头持仓占比变化",u"周空头持仓占比变化",u"月多头持仓占比变化",u"月空头持仓占比变化"]).T
     #换手率
 #    turn = vol_df.iloc[-1,:] / oi_df.iloc[-1,:]
 #    turn.sort_values(ascending=False,inplace=True)
@@ -265,5 +285,5 @@ def vol_oi_indicator(main_cnt_list_today,cmt_list,compute_date_str,relative_data
     plt.title(u"排名前十会员持空头占比1月增幅",fontsize=20)
     axis.yaxis.set_major_formatter(FuncFormatter(lambda y, _: '{:.1%}'.format(y)))
     fig_list.append(fig)
-    return fig_list
+    return fig_list,stat_head_df,stat_tail_df
     

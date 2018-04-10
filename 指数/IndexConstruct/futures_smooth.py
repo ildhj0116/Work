@@ -29,5 +29,5 @@ if __name__ == "__main__":
         main_price.name = cmt
         smoothed_series.append(main_price)
     smoothed_df = pd.concat(smoothed_series,axis=1)
-    smoothed_df.dropna(inplace=True)
-    smoothed_df.to_csv("smoothed_main_cnt.csv")
+#    smoothed_df.dropna(inplace=True)
+    smoothed_df.to_csv("smoothed_main_cnt_total.csv")

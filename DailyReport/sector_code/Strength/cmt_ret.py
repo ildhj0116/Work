@@ -37,12 +37,14 @@ def cmt_ret_rank(main_cnt_list_today,cmt_list,relative_data_path):
     ret_d.sort_values(ascending=False,inplace=True)
     ret_w.sort_values(ascending=False,inplace=True)
     ret_m.sort_values(ascending=False,inplace=True)
+    head_d = ret_d.head().index.tolist()
+    tail_d = ret_d.tail().index.tolist().reverse()
     head_w = ret_w.head().index.tolist()
-    tail_w = ret_w.tail().index.tolist()
+    tail_w = ret_w.tail().index.tolist().reverse()
     head_m = ret_m.head().index.tolist()
-    tail_m = ret_m.tail().index.tolist()
-    stat_head_df = pd.DataFrame([head_w,head_m],index=[u"5日收益",u"20日收益"]).T
-    stat_tail_df = pd.DataFrame([tail_w,tail_m],index=[u"5日收益",u"20日收益"]).T
+    tail_m = ret_m.tail().index.tolist().reverse()
+    stat_head_df = pd.DataFrame([head_d,head_w,head_m],index=[u"1日收益",u"5日收益",u"20日收益"]).T
+    stat_tail_df = pd.DataFrame([tail_d,tail_w,tail_m],index=[u"1日收益",u"5日收益",u"20日收益"]).T
     #画图
     fig = plt.figure(figsize=(19.2,10.8), dpi=100)
     axis = fig.add_subplot(111)
