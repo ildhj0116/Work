@@ -43,6 +43,14 @@ def NanHua(start_date,end_date):
     fig_list.append(fig)
     return fig_list
 #品种收益率
-#Nanhua_code_series = pd.read_csv("../../Futures_Data/cmt_list/Nanhua_code_list.csv",index_col=0)
-#cmt_list = pd.read_csv("../../Futures_Data/cmt_list/cmt_daily_list.csv").loc[:,"cmt"].tolist()
-#cmt_windcode = [Nanhua_code_series.loc[x[:-4]] for x in cmt_list]
+    
+if __name__ == "__main__":
+#    Nanhua_code_series = pd.read_csv("../../Futures_Data/cmt_list/Nanhua_code_list.csv",index_col=0)
+#    cmt_list = pd.read_csv("../../Futures_Data/cmt_list/cmt_daily_list.csv").loc[:,"cmt"].tolist()
+#    cmt_windcode = [Nanhua_code_series.loc[x[:-4]] for x in cmt_list]
+    start_date = "2018-01-02"
+    end_date = "2018-04-11"
+    
+    
+       
+    fig = NanHua(start_date,end_date)
