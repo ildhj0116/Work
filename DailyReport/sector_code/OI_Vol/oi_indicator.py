@@ -6,6 +6,7 @@ Created on Tue Mar 27 15:21:46 2018
 """
 
 import pandas as pd
+import numpy as np
 from WindPy import w
 #from datetime import datetime
 import matplotlib.pyplot as plt
@@ -64,12 +65,28 @@ def vol_oi_indicator(main_cnt_list_today,cmt_list,compute_date_str,relative_data
             TopN_oi_rate_series.loc["net_position_rate"] = TopN_oi_rate_series["long_potion_rate"] + TopN_oi_rate_series["short_position_rate"]
             TopN_oi_rate_series.name = cmt
             
-            long_1d = TopN_oi_rate_series["long_potion_rate"] / tmp_oi_rank_d.loc[1,"long_potion_rate"] - 1
-            long_1w = TopN_oi_rate_series["long_potion_rate"] / tmp_oi_rank_w.loc[1,"long_potion_rate"] - 1
-            long_1m = TopN_oi_rate_series["long_potion_rate"] / tmp_oi_rank_m.loc[1,"long_potion_rate"] - 1
-            short_1d = -TopN_oi_rate_series["short_position_rate"] / tmp_oi_rank_d.loc[1,"short_position_rate"] - 1
-            short_1w = -TopN_oi_rate_series["short_position_rate"] / tmp_oi_rank_w.loc[1,"short_position_rate"] - 1
-            short_1m = -TopN_oi_rate_series["short_position_rate"] / tmp_oi_rank_d.loc[1,"short_position_rate"] - 1
+            if len(tmp_oi_rank_d) == 0:
+                long_1d = np.nan
+                short_1d = np.nan
+            else:            
+                long_1d = TopN_oi_rate_series["long_potion_rate"] / tmp_oi_rank_d.loc[1,"long_potion_rate"] - 1
+                short_1d = -TopN_oi_rate_series["short_position_rate"] / tmp_oi_rank_d.loc[1,"short_position_rate"] - 1
+            if len(tmp_oi_rank_w) == 0:
+                long_1w = np.nan
+                short_1w = np.nan
+            else:                
+                long_1w = TopN_oi_rate_series["long_potion_rate"] / tmp_oi_rank_w.loc[1,"long_potion_rate"] - 1
+                short_1w = -TopN_oi_rate_series["short_position_rate"] / tmp_oi_rank_w.loc[1,"short_position_rate"] - 1
+            if len(tmp_oi_rank_m) == 0:
+                long_1m = np.nan
+                short_1m = np.nan
+            else:
+                long_1m = TopN_oi_rate_series["long_potion_rate"] / tmp_oi_rank_m.loc[1,"long_potion_rate"] - 1
+                short_1m = -TopN_oi_rate_series["short_position_rate"] / tmp_oi_rank_m.loc[1,"short_position_rate"] - 1
+            
+            
+
+                
             rate_pchg_series = pd.Series([long_1d,long_1w,long_1m,short_1d,short_1w,short_1m],index=
                                          ["long_1d","long_1w","long_1m","short_1d","short_1w","short_1m"],name=cmt)
             
@@ -84,12 +101,12 @@ def vol_oi_indicator(main_cnt_list_today,cmt_list,compute_date_str,relative_data
     TopN_oi_df = pd.concat(TopN_oi_series_list,axis=1)
     TopN_oi_df.columns = cmt_list.loc[TopN_oi_df.columns.tolist(),:]["Chinese"].tolist()
     oi_rank_pchg_df = pd.concat(oi_rank_pchg_series_list,axis=1)
-    oi_rank_long_1d = oi_rank_pchg_df.loc["long_1d",:].copy()
-    oi_rank_long_1w = oi_rank_pchg_df.loc["long_1w",:].copy()
-    oi_rank_long_1m = oi_rank_pchg_df.loc["long_1m",:].copy()
-    oi_rank_short_1d = oi_rank_pchg_df.loc["short_1d",:].copy()
-    oi_rank_short_1w = oi_rank_pchg_df.loc["short_1w",:].copy()
-    oi_rank_short_1m = oi_rank_pchg_df.loc["short_1m",:].copy()
+    oi_rank_long_1d = oi_rank_pchg_df.loc["long_1d",:].dropna().copy()
+    oi_rank_long_1w = oi_rank_pchg_df.loc["long_1w",:].dropna().copy()
+    oi_rank_long_1m = oi_rank_pchg_df.loc["long_1m",:].dropna().copy()
+    oi_rank_short_1d = oi_rank_pchg_df.loc["short_1d",:].dropna().copy()
+    oi_rank_short_1w = oi_rank_pchg_df.loc["short_1w",:].dropna().copy()
+    oi_rank_short_1m = oi_rank_pchg_df.loc["short_1m",:].dropna().copy()
     oi_rank_long_1d.sort_values(ascending=False,inplace=True)
     oi_rank_long_1w.sort_values(ascending=False,inplace=True)
     oi_rank_long_1m.sort_values(ascending=False,inplace=True)
@@ -103,17 +120,17 @@ def vol_oi_indicator(main_cnt_list_today,cmt_list,compute_date_str,relative_data
     oi_rank_short_1w.index = cmt_list.loc[oi_rank_short_1w.index.tolist(),:]["Chinese"].tolist()
     oi_rank_short_1m.index = cmt_list.loc[oi_rank_short_1m.index.tolist(),:]["Chinese"].tolist()
     head_oi_rank_long_1d = oi_rank_long_1d.head().index.tolist()
-    tail_oi_rank_long_1d = oi_rank_long_1d.tail().index.tolist().reverse()
+    tail_oi_rank_long_1d = list(reversed(oi_rank_long_1d.tail().index.tolist()))
     head_oi_rank_short_1d = oi_rank_short_1d.head().index.tolist()
-    tail_oi_rank_short_1d = oi_rank_short_1d.tail().index.tolist().reverse()
+    tail_oi_rank_short_1d = list(reversed(oi_rank_short_1d.tail().index.tolist()))
     head_oi_rank_long_1w = oi_rank_long_1w.head().index.tolist()
-    tail_oi_rank_long_1w = oi_rank_long_1w.tail().index.tolist().reverse()
+    tail_oi_rank_long_1w = list(reversed(oi_rank_long_1w.tail().index.tolist()))
     head_oi_rank_short_1w = oi_rank_short_1w.head().index.tolist()
-    tail_oi_rank_short_1w = oi_rank_short_1w.tail().index.tolist().reverse()
+    tail_oi_rank_short_1w = list(reversed(oi_rank_short_1w.tail().index.tolist()))
     head_oi_rank_long_1m = oi_rank_long_1m.head().index.tolist()
-    tail_oi_rank_long_1m = oi_rank_long_1m.tail().index.tolist().reverse()
+    tail_oi_rank_long_1m = list(reversed(oi_rank_long_1m.tail().index.tolist()))
     head_oi_rank_short_1m = oi_rank_short_1m.head().index.tolist()
-    tail_oi_rank_short_1m = oi_rank_short_1m.tail().index.tolist().reverse()
+    tail_oi_rank_short_1m = list(reversed(oi_rank_short_1m.tail().index.tolist()))
     #成交、持仓量变化比率
     vol_chg_df = (vol_df - vol_df.shift(1)) / vol_df.shift(1)
     vol_chg = vol_chg_df.iloc[-1,:]    
@@ -124,15 +141,14 @@ def vol_oi_indicator(main_cnt_list_today,cmt_list,compute_date_str,relative_data
     vol_chg_positive.index = cmt_list.loc[vol_chg_positive.index.tolist(),:]["Chinese"].tolist()
     vol_chg_negative.index = cmt_list.loc[vol_chg_negative.index.tolist(),:]["Chinese"].tolist()
     head_vol_chg_positive = vol_chg_positive.head().index.tolist()
-    tail_vol_chg_positive = vol_chg_positive.tail().index.tolist().reverse()
-    head_vol_chg_negative = vol_chg_negative.head().index.tolist()
-    tail_vol_chg_negative = vol_chg_negative.tail().index.tolist().reverse()
+    tail_vol_chg_negative = vol_chg_negative.head().index.tolist()
+
     
-    stat_head_df = pd.DataFrame([head_vol_chg_positive,head_vol_chg_negative,head_oi_rank_long_1d,head_oi_rank_short_1d,head_oi_rank_long_1w,
-                                 head_oi_rank_short_1w,head_oi_rank_long_1m,head_oi_rank_short_1m],index=[u"品种日增仓",u"品种日减仓","日多头持仓占比变化",
+    stat_head_df = pd.DataFrame([head_vol_chg_positive,head_oi_rank_long_1d,head_oi_rank_short_1d,head_oi_rank_long_1w,
+                                 head_oi_rank_short_1w,head_oi_rank_long_1m,head_oi_rank_short_1m],index=[u"成交量变化",u"日多头持仓占比变化",
                                 u"日空头持仓占比变化",u"周多头持仓占比变化",u"周空头持仓占比变化",u"月多头持仓占比变化",u"月空头持仓占比变化"]).T
-    stat_tail_df = pd.DataFrame([tail_vol_chg_positive,tail_vol_chg_negative,tail_oi_rank_long_1d,tail_oi_rank_short_1d,tail_oi_rank_long_1w,
-                                 tail_oi_rank_short_1w,tail_oi_rank_long_1m,tail_oi_rank_short_1m],index=[u"品种日增仓",u"品种日减仓","日多头持仓占比变化",
+    stat_tail_df = pd.DataFrame([tail_vol_chg_negative,tail_oi_rank_long_1d,tail_oi_rank_short_1d,tail_oi_rank_long_1w,
+                                 tail_oi_rank_short_1w,tail_oi_rank_long_1m,tail_oi_rank_short_1m],index=[u"成交量变化",u"日多头持仓占比变化",
                                 u"日空头持仓占比变化",u"周多头持仓占比变化",u"周空头持仓占比变化",u"月多头持仓占比变化",u"月空头持仓占比变化"]).T
     #换手率
 #    turn = vol_df.iloc[-1,:] / oi_df.iloc[-1,:]

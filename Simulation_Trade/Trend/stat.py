@@ -76,12 +76,13 @@ for i in range(len(deal)):
                     position_df = pd.concat([position_df,tmp_stat]).T
                 else:
                     if tmp_stat["contract"] in position_df["contract"].tolist():
-                        original = position_df[position_df["contract"]==tmp_stat["contract"]]
-                        original.loc["date"] = tmp_stat["date"]
-                        original.loc["price"] = ((tmp_stat["price"] * tmp_stat[u"position"] + original["price"] * original["position"])
-                                                   / (tmp_stat["position"] + original["position"]))
-                        original["position"] = tmp_stat["position"] + original["position"]
-                        original["position"] = tmp_stat["position"] + original["position"]
+                        index = position_df[position_df["contract"]==tmp_stat["contract"]].index[0]
+                        position_df.loc[index,"date"] = tmp_stat["date"]
+                        position_df.loc[index,"price"] = ((tmp_stat["price"] * tmp_stat["position"] + position_df.loc[index,"price"] 
+                                                          * position_df.loc[index,"position"]) / (tmp_stat["position"] + 
+                                                          position_df.loc[index,"position"]))
+                        position_df.loc[index,"position"] = tmp_stat["position"] + position_df.loc[index,"position"]
+                        position_df.loc[index,"cost"] = tmp_stat["cost"] + position_df.loc[index,"cost"]
                     else:
                         position_df = pd.concat([position_df.T,tmp_stat],axis=1).T
             else:
@@ -119,12 +120,13 @@ if len(tmp_list)!= 0:
             position_df = pd.concat([position_df,tmp_stat]).T
         else:
             if tmp_stat["contract"] in position_df["contract"].tolist():
-                original = position_df[position_df["contract"]==tmp_stat["contract"]]
-                original.loc["date"] = tmp_stat["date"]
-                original.loc["price"] = ((tmp_stat["price"] * tmp_stat["position"] + original["price"] * original["position"])
-                                           / (tmp_stat["position"] + original["position"]))
-                original["position"] = tmp_stat["position"] + original["position"]
-                original["position"] = tmp_stat["position"] + original["position"]
+                index = position_df[position_df["contract"]==tmp_stat["contract"]].index[0]
+                position_df.loc[index,"date"] = tmp_stat["date"]
+                position_df.loc[index,"price"] = ((tmp_stat["price"] * tmp_stat["position"] + position_df.loc[index,"price"] 
+                                                  * position_df.loc[index,"position"]) / (tmp_stat["position"] + 
+                                                  position_df.loc[index,"position"]))
+                position_df.loc[index,"position"] = tmp_stat["position"] + position_df.loc[index,"position"]
+                position_df.loc[index,"cost"] = tmp_stat["cost"] + position_df.loc[index,"cost"]
             else:
                 position_df = pd.concat([position_df,tmp_stat])
     else:

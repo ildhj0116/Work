@@ -52,11 +52,11 @@ def money_flow_local_main(end_date,cmt_list,interval,relative_data_path):
     fund_df["commodity_name"] = cmt_list.loc[fund_df.index.tolist(),:]["Chinese"].tolist()
     fund_df = fund_df[["commodity_name","passive_fund","active_fund","total_fund","fund_chg"]]
     head_fund_list = fund_df.sort_values(by=["total_fund"],ascending=False).head().loc[:,"commodity_name"].tolist()
-    tail_fund_list = fund_df.sort_values(by=["total_fund"],ascending=False).tail().loc[:,"commodity_name"].tolist().reverse()
+    tail_fund_list = list(reversed(fund_df.sort_values(by=["total_fund"],ascending=False).tail().loc[:,"commodity_name"].tolist()))
     head_fund_series = pd.Series(head_fund_list,name=str(interval) + u"日资金流向")
     tail_fund_series = pd.Series(tail_fund_list,name=str(interval) + u"日资金流向")
     head_chg_list = fund_df.sort_values(by=["fund_chg"],ascending=False).head().loc[:,"commodity_name"].tolist()
-    tail_chg_list = fund_df.sort_values(by=["fund_chg"],ascending=False).tail().loc[:,"commodity_name"].tolist().reverse()
+    tail_chg_list = list(reversed(fund_df.sort_values(by=["fund_chg"],ascending=False).tail().loc[:,"commodity_name"].tolist()))
     head_chg_series = pd.Series(head_chg_list,name=str(interval) + u"日资金流向变化率")
     tail_chg_series = pd.Series(tail_chg_list,name=str(interval) + u"日资金流向变化率")
     if interval == 1:

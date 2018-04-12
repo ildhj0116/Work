@@ -38,11 +38,11 @@ def cmt_ret_rank(main_cnt_list_today,cmt_list,relative_data_path):
     ret_w.sort_values(ascending=False,inplace=True)
     ret_m.sort_values(ascending=False,inplace=True)
     head_d = ret_d.head().index.tolist()
-    tail_d = ret_d.tail().index.tolist().reverse()
+    tail_d = list(reversed(ret_d.tail().index.tolist()))
     head_w = ret_w.head().index.tolist()
-    tail_w = ret_w.tail().index.tolist().reverse()
+    tail_w = list(reversed(ret_w.tail().index.tolist()))
     head_m = ret_m.head().index.tolist()
-    tail_m = ret_m.tail().index.tolist().reverse()
+    tail_m = list(reversed(ret_m.tail().index.tolist()))
     stat_head_df = pd.DataFrame([head_d,head_w,head_m],index=[u"1日收益",u"5日收益",u"20日收益"]).T
     stat_tail_df = pd.DataFrame([tail_d,tail_w,tail_m],index=[u"1日收益",u"5日收益",u"20日收益"]).T
     #画图
@@ -116,7 +116,7 @@ def cmt_ret_rank_date(main_cnt_list_today,cmt_list,relative_data_path,start_date
     ret_date.index = cmt_list.loc[ret_date.index.tolist(),:]["Chinese"].tolist()
     ret_date.sort_values(ascending=False,inplace=True)
     head = ret_date.head().index.tolist()
-    tail = ret_date.tail().index.tolist()
+    tail = list(reversed(ret_date.tail().index.tolist()))
     stat_head_df = pd.Series(head,name=u"一季度收益").T
     stat_tail_df = pd.Series(tail,name=u"一季度收益").T
     

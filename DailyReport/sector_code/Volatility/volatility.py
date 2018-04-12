@@ -33,7 +33,7 @@ def amplitude(main_cnt_list_today,N_days,cmt_list,compute_date_str):
     amp = df["amplitude"].sort_values(ascending=False).copy()
     amp.index = cmt_list.loc[amp.index.tolist(),:]["Chinese"].tolist()
     head = amp.head().index.tolist()
-    tail = amp.tail().index.tolist().reverse()
+    tail = list(reversed(amp.tail().index.tolist()))
     stat_head_df = pd.Series(head,name=u"振幅").T
     stat_tail_df = pd.Series(tail,name=u"振幅").T
     
