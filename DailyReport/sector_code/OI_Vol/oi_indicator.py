@@ -60,29 +60,37 @@ def vol_oi_indicator(main_cnt_list_today,cmt_list,compute_date_str,relative_data
             main_cnt_vol.name = cmt
             main_cnt_oi = tmp_oi[main_cnt].dropna().copy()
             main_cnt_oi.name = cmt
-            TopN_oi_rate_series = tmp_oi_rank.iloc[1,:]
-            TopN_oi_rate_series.loc["short_position_rate"] = -TopN_oi_rate_series.loc["short_position_rate"]
-            TopN_oi_rate_series.loc["net_position_rate"] = TopN_oi_rate_series["long_potion_rate"] + TopN_oi_rate_series["short_position_rate"]
-            TopN_oi_rate_series.name = cmt
-            
-            if len(tmp_oi_rank_d) == 0:
+            if len(tmp_oi_rank) == 0:
                 long_1d = np.nan
                 short_1d = np.nan
-            else:            
-                long_1d = TopN_oi_rate_series["long_potion_rate"] / tmp_oi_rank_d.loc[1,"long_potion_rate"] - 1
-                short_1d = -TopN_oi_rate_series["short_position_rate"] / tmp_oi_rank_d.loc[1,"short_position_rate"] - 1
-            if len(tmp_oi_rank_w) == 0:
                 long_1w = np.nan
                 short_1w = np.nan
-            else:                
-                long_1w = TopN_oi_rate_series["long_potion_rate"] / tmp_oi_rank_w.loc[1,"long_potion_rate"] - 1
-                short_1w = -TopN_oi_rate_series["short_position_rate"] / tmp_oi_rank_w.loc[1,"short_position_rate"] - 1
-            if len(tmp_oi_rank_m) == 0:
                 long_1m = np.nan
                 short_1m = np.nan
             else:
-                long_1m = TopN_oi_rate_series["long_potion_rate"] / tmp_oi_rank_m.loc[1,"long_potion_rate"] - 1
-                short_1m = -TopN_oi_rate_series["short_position_rate"] / tmp_oi_rank_m.loc[1,"short_position_rate"] - 1
+                TopN_oi_rate_series = tmp_oi_rank.iloc[1,:]
+                TopN_oi_rate_series.loc["short_position_rate"] = -TopN_oi_rate_series.loc["short_position_rate"]
+                TopN_oi_rate_series.loc["net_position_rate"] = TopN_oi_rate_series["long_potion_rate"] + TopN_oi_rate_series["short_position_rate"]
+                TopN_oi_rate_series.name = cmt
+            
+                if len(tmp_oi_rank_d) == 0:
+                    long_1d = np.nan
+                    short_1d = np.nan
+                else:            
+                    long_1d = TopN_oi_rate_series["long_potion_rate"] / tmp_oi_rank_d.loc[1,"long_potion_rate"] - 1
+                    short_1d = -TopN_oi_rate_series["short_position_rate"] / tmp_oi_rank_d.loc[1,"short_position_rate"] - 1
+                if len(tmp_oi_rank_w) == 0:
+                    long_1w = np.nan
+                    short_1w = np.nan
+                else:                
+                    long_1w = TopN_oi_rate_series["long_potion_rate"] / tmp_oi_rank_w.loc[1,"long_potion_rate"] - 1
+                    short_1w = -TopN_oi_rate_series["short_position_rate"] / tmp_oi_rank_w.loc[1,"short_position_rate"] - 1
+                if len(tmp_oi_rank_m) == 0:
+                    long_1m = np.nan
+                    short_1m = np.nan
+                else:
+                    long_1m = TopN_oi_rate_series["long_potion_rate"] / tmp_oi_rank_m.loc[1,"long_potion_rate"] - 1
+                    short_1m = -TopN_oi_rate_series["short_position_rate"] / tmp_oi_rank_m.loc[1,"short_position_rate"] - 1
             
             
 

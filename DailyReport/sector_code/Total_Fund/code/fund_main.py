@@ -4,9 +4,10 @@ Created on Tue Jan 16 14:01:52 2018
 计算期货市场的沉淀资金并分版块画图
 @author: LHYM
 """
+import pandas as pd
 from contract_code import contract_code
 from CV_Compute import CV_Compute
-from plotCV import plotCV_sector,plotCV_sector_one_graph,plotCV_all
+from plotCV import plotCV_sector,plotCV_sector_one_graph,plotCV_all,plot_chg_sector
 from WindPy import w 
 w.start()
 
@@ -52,6 +53,7 @@ def fund_main_weekly(start_date,end_date,cmt_list,date_interval):
     fig_sector = plotCV_sector(Contract_Value_sector)
     return [fig_sector]
 
+
 def fund_main_date(start_date,end_date,cmt_list):
     #制作合约列表
     total_cnt = contract_code(cmt_dict,start_date,end_date) 
@@ -65,28 +67,49 @@ def fund_main_date(start_date,end_date,cmt_list):
     fig_sector = plotCV_sector(Contract_Value_sector)
     return [fig_sector]
 
+
+def fund_main_CV_output(start_date,end_date):
+    #制作合约列表
+    total_cnt = contract_code(cmt_dict,start_date,end_date) 
+   
+    #根据下载的合约列表在所给时间段中每日下载持仓量、收盘价和乘数并计算合约价值，并存入csv文件中
+    Contract_Value_sector, Contract_Value_allcmt = CV_Compute(total_cnt,start_date,end_date,cmt_dict)  
+    #画总合约价值和版块合约价值图（2*3 subplots）并存储
+    fig_sector = plotCV_sector(Contract_Value_sector)
+    
+    return fig_sector,Contract_Value_sector
+
+
 if __name__ == "__main__":
     
     
     ###############################################################################    
-    start_date = '2017-09-01'
-    end_date = '2018-03-27'
+    start_date = '2017-01-01'
+    end_date = '2018-04-12'
     
     # 下载所有品种所有合约列表
-    total_cnt = contract_code(cmt_dict,start_date,end_date) 
-    #print "合约制作完毕"
-    
-    #根据下载的合约列表在所给时间段中每日下载持仓量、收盘价和乘数并计算合约价值，并存入csv文件中
-    Contract_Value_sector, Contract_Value_allcmt =CV_Compute(total_cnt,start_date,end_date,cmt_dict)
-    
-    
-    #画总合约价值和版块合约价值图（2*3 subplots）并存储
-    plotCV_sector(Contract_Value_sector)
-    #画所有品种资金沉淀
-    plotCV_all(Contract_Value_allcmt)
-
-
-
-
-
-
+    fig_sector,cv = fund_main_CV_output(start_date,end_date)
+    fig_sector.savefig("cv.jpg",bbox_inches='tight')
+    #cv = pd.read_csv("cv.csv")
+    jan = cv.iloc[:18,:].mean()
+    jan.name = "Jan"
+    feb = cv.iloc[18:36,:].mean()
+    feb.name = "Feb"
+    mar = cv.iloc[36:58,:].mean()
+    mar.name = "Mar"
+    fund2017 = pd.concat([jan,feb,mar],axis=1)
+    jan1 = cv.iloc[244:266,:].mean()
+    jan1.name = "Jan1"
+    feb1 = cv.iloc[266:281,:].mean()
+    feb1.name = "Feb1"
+    mar1 = cv.iloc[281:303,:].mean()
+    mar1.name = "Mar1"
+    fund2017 = pd.concat([fund2017,jan1,feb1,mar1],axis=1)
+    fund = fund2017.copy()
+    fund["1"] = fund["Jan1"] / fund["Jan"] -1
+    fund["2"] = fund["Feb1"] / fund["Feb"] -1
+    fund["3"] = fund["Mar1"] / fund["Mar"] -1
+    chg = fund[["1","2","3"]]
+    chg.columns = [u"一月",u"二月",u"三月"]
+    fig1 = plot_chg_sector(chg)
+    fig1.savefig("cv_chg.jpg",bbox_inches='tight')

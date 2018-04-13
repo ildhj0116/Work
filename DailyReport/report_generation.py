@@ -42,7 +42,7 @@ def Report_Generation(report_date,head_list,tail_list,image_title_list):
     for p in document.paragraphs:
         counter += 1
         if counter == 1:
-            text = title_dict[counter] + u"量化日报"
+            text = u"浙商期货研究中心" + title_dict[counter] + u"量化日报"
             p = edit_text(p,-1,text,report_date,20,True)
         elif counter in head_index_list:
             index = p.text.find(':')

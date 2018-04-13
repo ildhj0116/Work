@@ -6,6 +6,7 @@ Created on Tue Jan 16 15:39:28 2018
 """
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdate
+from matplotlib.ticker import FuncFormatter
 import pandas as pd
 
 #不加这个中文标题可能乱码
@@ -32,6 +33,27 @@ def plotCV_sector(Contract_Value):
             #axes[r,c].xaxis.set_major_formatter(mdate.DateFormatter('%y-%m-%d %H:%M:%S'))
             #plt.xticks(rotation=90)
     plt.suptitle(u"沉淀资金（亿元）",fontsize=20)
+    return fig
+
+
+def plot_chg_sector(chg):
+    fig,axes = plt.subplots(nrows=2, ncols=3)
+    fig.set_dpi(100)
+    fig.set_figheight(10.8)
+    fig.set_figwidth(19.2)
+    mtitle = [[u"总沉淀资金同比变化",u"化工沉淀资金同比变化",u"农产品沉淀资金同比变化"],
+              [u"黑色沉淀资金同比变化",u"有色沉淀资金同比变化",u"贵金属沉淀资金同比变化"]]
+    cmt = [["total_CV","chem_CV","agri_CV"],["fmt_CV","nfmt_CV","gld_CV"]]
+    for r in range(2):
+        for c in range(3):
+            chg.loc[cmt[r][c],:].plot.bar(ax=axes[r,c],title=mtitle[r][c],rot=0)
+#            for tick in axes[r,c].xaxis.get_major_ticks():
+#                tick.label.set_fontsize(10)
+#                tick.label.set_rotation(90)
+            #axes[r,c].xaxis.set_major_formatter(mdate.DateFormatter('%y-%m-%d %H:%M:%S'))
+            axes[r,c].axhline(0, color='k')
+            axes[r,c].yaxis.set_major_formatter(FuncFormatter(lambda y, _: '{:.1%}'.format(y)))
+    plt.suptitle(u"18年一季度与17年一季度板块沉淀资金同比变化（亿元）",fontsize=20)
     return fig
 
 def plotCV_sector_one_graph(Contract_Value):

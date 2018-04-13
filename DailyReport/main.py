@@ -98,7 +98,7 @@ if __name__ == "__main__":
     cmt_list.drop(["IC.CFE","IF.CFE","IH.CFE","T.CFE","TF.CFE"],inplace=True)
 #    cmt_list = pd.DataFrame({"cmt":{"IC.CFE":"IC"}})
     main_cnt_df = pd.read_csv("../Futures_Data/main_cnt/data/main_cnt_total.csv",parse_dates=[0],index_col=0)
-    report_date = "2018-04-12"
+    report_date = "2018-04-13"
     mode = "day"
     #mode = "day"
     
