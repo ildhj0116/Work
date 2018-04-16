@@ -33,8 +33,8 @@ def position_rank_download_cmt(start_date,end_date,cmt):
 
     
 if __name__ == "__main__":
-    start_date = "2016-01-01"
-    end_date = "2016-12-31"
+    start_date = "2018-04-16"
+    end_date = "2018-04-16"
     main_cnt_df = pd.read_csv("../main_cnt/data/main_cnt_total.csv",parse_dates=[0],index_col=0)
     cmt_list = main_cnt_df.columns.tolist()
     cmt_list = cmt_list[10:]

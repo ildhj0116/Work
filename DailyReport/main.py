@@ -17,7 +17,7 @@ from NanHua import NanHua
 from cmt_ret import cmt_ret_rank,cmt_ret_rank_date
 from volatility import amplitude
 from oi_indicator import vol_oi_indicator
-from fund_main import fund_main,fund_main_weekly,fund_main_date
+from fund_main import fund_main,fund_main_local,fund_main_weekly,fund_main_date
 from money_flow_main import money_flow_main,money_flow_local_main,money_flow_local_date_main
 from report_generation import Report_Generation
 
@@ -98,7 +98,7 @@ if __name__ == "__main__":
     cmt_list.drop(["IC.CFE","IF.CFE","IH.CFE","T.CFE","TF.CFE"],inplace=True)
 #    cmt_list = pd.DataFrame({"cmt":{"IC.CFE":"IC"}})
     main_cnt_df = pd.read_csv("../Futures_Data/main_cnt/data/main_cnt_total.csv",parse_dates=[0],index_col=0)
-    report_date = "2018-04-13"
+    report_date = "2018-04-16"
     mode = "day"
     #mode = "day"
     
@@ -129,91 +129,105 @@ if __name__ == "__main__":
         #   (2)半年内南华商品指数收益率折线图
 
         #   (3)各品种日、月、周收益率排名
-        start_date = "2018-01-02"
-        end_date = "2018-03-30"
-        if mode == "one_date":
-            tmp_fig_list,tmp_head_df,tmp_tail_df = cmt_ret_rank_date(main_cnt_list_today,cmt_list,relative_data_path,
-                                                                     start_date,end_date)
-        else:
-            tmp_fig_list,tmp_head_df,tmp_tail_df = cmt_ret_rank(main_cnt_list_today,cmt_list,relative_data_path)
-        head_df = pd.concat([head_df,tmp_head_df],axis=1)
-        tail_df = pd.concat([tail_df,tmp_tail_df],axis=1)                                                             
-        fig_list.extend(tmp_fig_list)
+        active_1 = 0
+        if active_1 == 1:
+            start_date = "2018-01-02"
+            end_date = "2018-03-30"
+            if mode == "one_date":
+                tmp_fig_list,tmp_head_df,tmp_tail_df = cmt_ret_rank_date(main_cnt_list_today,cmt_list,relative_data_path,
+                                                                         start_date,end_date)
+            else:
+                tmp_fig_list,tmp_head_df,tmp_tail_df = cmt_ret_rank(main_cnt_list_today,cmt_list,relative_data_path)
+            head_df = pd.concat([head_df,tmp_head_df],axis=1)
+            tail_df = pd.concat([tail_df,tmp_tail_df],axis=1)                                                             
+            fig_list.extend(tmp_fig_list)
 
         
         # 2、波动率提示：品种日振幅
-
-        if mode == "day":
-            N_list = [1]
-        else:
-            N_list = []
-        for N_days in N_list:
-            tmp_fig_list,head_df,tail_df = amplitude(main_cnt_list_today,N_days,cmt_list,report_date)
-            head_df = pd.concat([head_df,tmp_head_df],axis=1)
-            tail_df = pd.concat([tail_df,tmp_tail_df],axis=1)        
-            fig_list.extend(tmp_fig_list)
+        active_2 = 0
+        if active_2 == 1:
+            if mode == "day":
+                N_list = [1]
+            else:
+                N_list = []
+            for N_days in N_list:
+                tmp_fig_list,head_df,tail_df = amplitude(main_cnt_list_today,N_days,cmt_list,report_date)
+                head_df = pd.concat([head_df,tmp_head_df],axis=1)
+                tail_df = pd.concat([tail_df,tmp_tail_df],axis=1)        
+                fig_list.extend(tmp_fig_list)
 
         # 3、持仓、成交提示
-        if mode == "day":
-            tmp_fig_list,tmp_head_df,tmp_tail_df = vol_oi_indicator(main_cnt_list_today,cmt_list,report_date,relative_data_path)
-            head_df = pd.concat([head_df,tmp_head_df],axis=1)
-            tail_df = pd.concat([tail_df,tmp_tail_df],axis=1) 
-            fig_list.extend(tmp_fig_list)
+        active_3 = 0
+        if active_3 == 1:        
+            if mode == "day":
+                tmp_fig_list,tmp_head_df,tmp_tail_df = vol_oi_indicator(main_cnt_list_today,cmt_list,report_date,relative_data_path)
+                head_df = pd.concat([head_df,tmp_head_df],axis=1)
+                tail_df = pd.concat([tail_df,tmp_tail_df],axis=1) 
+                fig_list.extend(tmp_fig_list)
 
         # 4、资金提示
         #   (1)沉淀资金
-        start_date_fund = "2018-01-02"
-        end_date = "2018-03-30"
-        date_interval = 20
-        if mode == "week":
-            tmp_fig_list = fund_main_weekly(start_date_fund,report_date,copy.deepcopy(cmt_list),date_interval)
-        elif mode == "one_date":
-            tmp_fig_list = fund_main_date(start_date_fund,report_date,copy.deepcopy(cmt_list))
-        elif mode == "day":
-            tmp_fig_list = fund_main(start_date_fund,report_date,copy.deepcopy(cmt_list))
-        fig_list.extend(tmp_fig_list)
+        active_4 = 1
+        if active_4 == 1:        
+            start_date_fund = "2018-01-02"
+            end_date = "2018-03-30"
+            date_interval = 20
+            if mode == "week":
+                tmp_fig_list = fund_main_weekly(start_date_fund,report_date,copy.deepcopy(cmt_list),date_interval)
+            elif mode == "one_date":
+                tmp_fig_list = fund_main_date(start_date_fund,report_date,copy.deepcopy(cmt_list))
+            elif mode == "day":
+                tmp_fig_list = fund_main(start_date_fund,report_date,copy.deepcopy(cmt_list))
+#                tmp_fig_list = fund_main_local(start_date_fund,report_date,copy.deepcopy(cmt_list),relative_data_path)
+            fig_list.extend(tmp_fig_list)
         
         #   (2)资金流向
-        top_N = 2
-        start_date = "2018-01-02"
-        if mode == "one_date":
-            end_date = "2018-03-30"
-        else:
-            end_date = report_date
-            
-        if mode == "one_date":
-            tmp_fig_list,tmp_head_fund,tmp_tail_fund,tmp_head_chg,tmp_tail_chg = money_flow_local_date_main(start_date,end_date,
-                                                                                                            cmt_list,relative_data_path)                                                                                                            
-            head_df = pd.concat([head_df,tmp_head_fund,tmp_head_chg],axis=1)
-            tail_df = pd.concat([tail_df,tmp_tail_fund,tmp_tail_chg],axis=1)
-        else:
-            if mode == "week":
-                interval_list = [5,20]  
+        active_5 = 0
+        if active_5 == 1:
+            top_N = 2
+            start_date = "2018-01-02"
+            if mode == "one_date":
+                end_date = "2018-03-30"
             else:
-                interval_list = [1]
-            for interval in interval_list:
-                #start_date_index = main_cnt_df.index.tolist().index(report_date_time) - interval
-                #start_date = main_cnt_df.index[start_date_index].strftime("%Y-%m-%d")
+                end_date = report_date
                 
-                tmp_fig_list,tmp_head_fund,tmp_tail_fund,tmp_head_chg,tmp_tail_chg = money_flow_local_main(end_date,cmt_list,
-                                                                                                           interval,relative_data_path)
-                fig_list.extend(tmp_fig_list)            
+            if mode == "one_date":
+                tmp_fig_list,tmp_head_fund,tmp_tail_fund,tmp_head_chg,tmp_tail_chg = money_flow_local_date_main(start_date,end_date,
+                                                                                                                cmt_list,relative_data_path)                                                                                                            
                 head_df = pd.concat([head_df,tmp_head_fund,tmp_head_chg],axis=1)
                 tail_df = pd.concat([tail_df,tmp_tail_fund,tmp_tail_chg],axis=1)
+            else:
+                if mode == "week":
+                    interval_list = [5,20]  
+                else:
+                    interval_list = [1]
+                for interval in interval_list:
+                    #start_date_index = main_cnt_df.index.tolist().index(report_date_time) - interval
+                    #start_date = main_cnt_df.index[start_date_index].strftime("%Y-%m-%d")
+                    
+                    tmp_fig_list,tmp_head_fund,tmp_tail_fund,tmp_head_chg,tmp_tail_chg = money_flow_local_main(end_date,cmt_list,
+                                                                                                               interval,relative_data_path)
+                    fig_list.extend(tmp_fig_list)            
+                    head_df = pd.concat([head_df,tmp_head_fund,tmp_head_chg],axis=1)
+                    tail_df = pd.concat([tail_df,tmp_tail_fund,tmp_tail_chg],axis=1)
         
         
         # 输出
-        output(mode,report_date,fig_list,title_list,head_df,tail_df)
+        active_output = 0
+        if active_output == 1:
+            output(mode,report_date,fig_list,title_list,head_df,tail_df)
         
         
         #报告生成
-        head_df = pd.read_csv("output/Daily/" + report_date + '/' + "head.csv",encoding="utf_8_sig",index_col=0)
-        tail_df = pd.read_csv("output/Daily/" + report_date + '/' + "tail.csv",encoding="utf_8_sig",index_col=0)
-        column_name_list = [u"1日收益",u"5日收益",u"20日收益",u"振幅",u"成交量变化",u"日多头持仓占比变化",u"日空头持仓占比变化",
-                          u"周多头持仓占比变化",u"周空头持仓占比变化",u"月多头持仓占比变化",u"月空头持仓占比变化"]
-        head_value_list = head_df[column_name_list].T.values.tolist()
-        tail_value_list = tail_df[column_name_list].T.values.tolist()
-        Report_Generation(report_date,head_value_list,tail_value_list,title_list)
+        active_report = 0
+        if active_report == 1:        
+            head_df = pd.read_csv("output/Daily/" + report_date + '/' + "head.csv",encoding="utf_8_sig",index_col=0)
+            tail_df = pd.read_csv("output/Daily/" + report_date + '/' + "tail.csv",encoding="utf_8_sig",index_col=0)
+            column_name_list = [u"1日收益",u"5日收益",u"20日收益",u"振幅",u"成交量变化",u"日多头持仓占比变化",u"日空头持仓占比变化",
+                              u"周多头持仓占比变化",u"周空头持仓占比变化",u"月多头持仓占比变化",u"月空头持仓占比变化"]
+            head_value_list = head_df[column_name_list].T.values.tolist()
+            tail_value_list = tail_df[column_name_list].T.values.tolist()
+            Report_Generation(report_date,head_value_list,tail_value_list,title_list)
         
         
         

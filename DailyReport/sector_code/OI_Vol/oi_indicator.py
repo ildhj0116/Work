@@ -17,6 +17,128 @@ def color_setting(ret):
     return colors
 m_cmt = ["IC.CFE","IF.CFE","IH.CFE","T.CFE","TF.CFE"]
 
+
+
+def position_rank_api(cmt,main_cnt_list_today,relative_data_path,compute_date_str,last_days):
+    Tday_1d = last_days[0]
+    Tday_1w = last_days[1]
+    Tday_1m = last_days[2]
+    main_cnt = main_cnt_list_today.loc[cmt]
+    tmp_vol = pd.read_csv(relative_data_path + "/data_vol/"+cmt[:-4]+".csv",parse_dates=[0],index_col=0)
+    tmp_oi = pd.read_csv(relative_data_path + "/data_oi/"+cmt[:-4]+".csv",parse_dates=[0],index_col=0)
+    tmp_oi_rank = w.wset("futureoir","startdate="+compute_date_str+";enddate="+compute_date_str+\
+                         ";varity="+cmt+";wind_code="+main_cnt+";order_by=long;ranks=all;field="+\
+                         "member_name,long_potion_rate,short_position_rate,net_position_rate")                        
+    tmp_oi_rank = pd.DataFrame(tmp_oi_rank.Data, index=tmp_oi_rank.Fields).T    
+    
+    tmp_oi_rank_d = w.wset("futureoir","startdate="+Tday_1d+";enddate="+Tday_1d+\
+                         ";varity="+cmt+";wind_code="+main_cnt+";order_by=long;ranks=all;field="+\
+                         "member_name,long_potion_rate,short_position_rate")                        
+    tmp_oi_rank_d = pd.DataFrame(tmp_oi_rank_d.Data, index=tmp_oi_rank_d.Fields).T
+    
+    tmp_oi_rank_w = w.wset("futureoir","startdate="+Tday_1w+";enddate="+Tday_1w+\
+                         ";varity="+cmt+";wind_code="+main_cnt+";order_by=long;ranks=all;field="+\
+                         "member_name,long_potion_rate,short_position_rate")                        
+    tmp_oi_rank_w = pd.DataFrame(tmp_oi_rank_w.Data, index=tmp_oi_rank_w.Fields).T 
+    
+    tmp_oi_rank_m = w.wset("futureoir","startdate="+Tday_1m+";enddate="+Tday_1m+\
+                         ";varity="+cmt+";wind_code="+main_cnt+";order_by=long;ranks=all;field="+\
+                         "member_name,long_potion_rate,short_position_rate")                        
+    tmp_oi_rank_m = pd.DataFrame(tmp_oi_rank_m.Data, index=tmp_oi_rank_m.Fields).T 
+    
+    main_cnt_vol = tmp_vol[main_cnt].dropna().copy()
+    main_cnt_vol.name = cmt
+    main_cnt_oi = tmp_oi[main_cnt].dropna().copy()
+    main_cnt_oi.name = cmt
+    if len(tmp_oi_rank) == 0:
+        long_1d = np.nan
+        short_1d = np.nan
+        long_1w = np.nan
+        short_1w = np.nan
+        long_1m = np.nan
+        short_1m = np.nan
+        TopN_oi_rate_series = pd.Series([np.nan,np.nan,np.nan],index=["long_potion_rate","short_position_rate","net_position_rate"],
+                                        name=cmt)
+    else:
+        TopN_oi_rate_series = tmp_oi_rank.iloc[1,:]
+        TopN_oi_rate_series.loc["short_position_rate"] = -TopN_oi_rate_series.loc["short_position_rate"]
+        TopN_oi_rate_series.loc["net_position_rate"] = TopN_oi_rate_series["long_potion_rate"] + TopN_oi_rate_series["short_position_rate"]
+        TopN_oi_rate_series.name = cmt
+    
+        if len(tmp_oi_rank_d) == 0:
+            long_1d = np.nan
+            short_1d = np.nan
+        else:            
+            long_1d = TopN_oi_rate_series["long_potion_rate"] / tmp_oi_rank_d.loc[1,"long_potion_rate"] - 1
+            short_1d = -TopN_oi_rate_series["short_position_rate"] / tmp_oi_rank_d.loc[1,"short_position_rate"] - 1
+        if len(tmp_oi_rank_w) == 0:
+            long_1w = np.nan
+            short_1w = np.nan
+        else:                
+            long_1w = TopN_oi_rate_series["long_potion_rate"] / tmp_oi_rank_w.loc[1,"long_potion_rate"] - 1
+            short_1w = -TopN_oi_rate_series["short_position_rate"] / tmp_oi_rank_w.loc[1,"short_position_rate"] - 1
+        if len(tmp_oi_rank_m) == 0:
+            long_1m = np.nan
+            short_1m = np.nan
+        else:
+            long_1m = TopN_oi_rate_series["long_potion_rate"] / tmp_oi_rank_m.loc[1,"long_potion_rate"] - 1
+            short_1m = -TopN_oi_rate_series["short_position_rate"] / tmp_oi_rank_m.loc[1,"short_position_rate"] - 1
+    rate_pchg_series = pd.Series([long_1d,long_1w,long_1m,short_1d,short_1w,short_1m],index=
+                                 ["long_1d","long_1w","long_1m","short_1d","short_1w","short_1m"],name=cmt)
+    return TopN_oi_rate_series,rate_pchg_series
+
+def position_rank_local(cmt,relative_data_path,compute_date_str,last_days):
+    Tday_1d = last_days[0]
+    Tday_1w = last_days[1]
+    Tday_1m = last_days[2]
+                     
+    tmp_oi_rank = pd.read_csv(relative_data_path+"/position_rank/cmt/"+compute_date_str+"/"+cmt[:-4]+".csv",encoding="utf_8_sig",
+                              index_col=0)
+    tmp_oi_rank_d = pd.read_csv(relative_data_path+"/position_rank/cmt/"+Tday_1d+"/"+cmt[:-4]+".csv",encoding="utf_8_sig",
+                              index_col=0)    
+    tmp_oi_rank_w = pd.read_csv(relative_data_path+"/position_rank/cmt/"+Tday_1w+"/"+cmt[:-4]+".csv",encoding="utf_8_sig",
+                              index_col=0)
+    tmp_oi_rank_m = pd.read_csv(relative_data_path+"/position_rank/cmt/"+Tday_1m+"/"+cmt[:-4]+".csv",encoding="utf_8_sig",
+                              index_col=0)    
+    
+    if len(tmp_oi_rank) == 0:
+        long_1d = np.nan
+        short_1d = np.nan
+        long_1w = np.nan
+        short_1w = np.nan
+        long_1m = np.nan
+        short_1m = np.nan
+    else:
+        TopN_oi_rate_series = tmp_oi_rank.loc[u"前十名合计",:]
+        TopN_oi_rate_series.loc["short_position_rate"] = -TopN_oi_rate_series.loc["short_position_rate"]
+        TopN_oi_rate_series.loc["net_position_rate"] = TopN_oi_rate_series["long_potion_rate"] + TopN_oi_rate_series["short_position_rate"]
+        TopN_oi_rate_series.name = cmt
+    
+        if len(tmp_oi_rank_d) == 0:
+            long_1d = np.nan
+            short_1d = np.nan
+        else:            
+            long_1d = TopN_oi_rate_series["long_potion_rate"] / tmp_oi_rank_d.loc[u"前十名合计","long_potion_rate"] - 1
+            short_1d = -TopN_oi_rate_series["short_position_rate"] / tmp_oi_rank_d.loc[u"前十名合计","short_position_rate"] - 1
+        if len(tmp_oi_rank_w) == 0:
+            long_1w = np.nan
+            short_1w = np.nan
+        else:                
+            long_1w = TopN_oi_rate_series["long_potion_rate"] / tmp_oi_rank_w.loc[u"前十名合计","long_potion_rate"] - 1
+            short_1w = -TopN_oi_rate_series["short_position_rate"] / tmp_oi_rank_w.loc[u"前十名合计","short_position_rate"] - 1
+        if len(tmp_oi_rank_m) == 0:
+            long_1m = np.nan
+            short_1m = np.nan
+        else:
+            long_1m = TopN_oi_rate_series["long_potion_rate"] / tmp_oi_rank_m.loc[u"前十名合计","long_potion_rate"] - 1
+            short_1m = -TopN_oi_rate_series["short_position_rate"] / tmp_oi_rank_m.loc[u"前十名合计","short_position_rate"] - 1
+    rate_pchg_series = pd.Series([long_1d,long_1w,long_1m,short_1d,short_1w,short_1m],index=
+                                 ["long_1d","long_1w","long_1m","short_1d","short_1w","short_1m"],name=cmt)
+    return TopN_oi_rate_series,rate_pchg_series
+
+
+
+        
 def vol_oi_indicator(main_cnt_list_today,cmt_list,compute_date_str,relative_data_path):
     fig_list = []
     vol_series_list = []
@@ -29,76 +151,19 @@ def vol_oi_indicator(main_cnt_list_today,cmt_list,compute_date_str,relative_data
     Tday_1w = Tday_1w.Data[0][0].strftime("%Y-%m-%d")
     Tday_1m = w.tdaysoffset(-20, compute_date_str, "TradingCalendar=SHFE")
     Tday_1m = Tday_1m.Data[0][0].strftime("%Y-%m-%d")
+    last_days = [Tday_1d, Tday_1w, Tday_1m]
     for cmt in cmt_list.index.tolist():
         if cmt in m_cmt:
             continue
         else:
-            main_cnt = main_cnt_list_today.loc[cmt]
             tmp_vol = pd.read_csv(relative_data_path + "/data_vol/"+cmt[:-4]+".csv",parse_dates=[0],index_col=0)
             tmp_oi = pd.read_csv(relative_data_path + "/data_oi/"+cmt[:-4]+".csv",parse_dates=[0],index_col=0)
-            tmp_oi_rank = w.wset("futureoir","startdate="+compute_date_str+";enddate="+compute_date_str+\
-                                 ";varity="+cmt+";wind_code="+main_cnt+";order_by=long;ranks=all;field="+\
-                                 "member_name,long_potion_rate,short_position_rate,net_position_rate")                        
-            tmp_oi_rank = pd.DataFrame(tmp_oi_rank.Data, index=tmp_oi_rank.Fields).T    
-            
-            tmp_oi_rank_d = w.wset("futureoir","startdate="+Tday_1d+";enddate="+Tday_1d+\
-                                 ";varity="+cmt+";wind_code="+main_cnt+";order_by=long;ranks=all;field="+\
-                                 "member_name,long_potion_rate,short_position_rate")                        
-            tmp_oi_rank_d = pd.DataFrame(tmp_oi_rank_d.Data, index=tmp_oi_rank_d.Fields).T
-            
-            tmp_oi_rank_w = w.wset("futureoir","startdate="+Tday_1w+";enddate="+Tday_1w+\
-                                 ";varity="+cmt+";wind_code="+main_cnt+";order_by=long;ranks=all;field="+\
-                                 "member_name,long_potion_rate,short_position_rate")                        
-            tmp_oi_rank_w = pd.DataFrame(tmp_oi_rank_w.Data, index=tmp_oi_rank_w.Fields).T 
-            
-            tmp_oi_rank_m = w.wset("futureoir","startdate="+Tday_1m+";enddate="+Tday_1m+\
-                                 ";varity="+cmt+";wind_code="+main_cnt+";order_by=long;ranks=all;field="+\
-                                 "member_name,long_potion_rate,short_position_rate")                        
-            tmp_oi_rank_m = pd.DataFrame(tmp_oi_rank_m.Data, index=tmp_oi_rank_m.Fields).T 
-            
+            main_cnt = main_cnt_list_today.loc[cmt]                
+            TopN_oi_rate_series,rate_pchg_series = position_rank_local(cmt,relative_data_path,compute_date_str,last_days)            
             main_cnt_vol = tmp_vol[main_cnt].dropna().copy()
             main_cnt_vol.name = cmt
             main_cnt_oi = tmp_oi[main_cnt].dropna().copy()
             main_cnt_oi.name = cmt
-            if len(tmp_oi_rank) == 0:
-                long_1d = np.nan
-                short_1d = np.nan
-                long_1w = np.nan
-                short_1w = np.nan
-                long_1m = np.nan
-                short_1m = np.nan
-            else:
-                TopN_oi_rate_series = tmp_oi_rank.iloc[1,:]
-                TopN_oi_rate_series.loc["short_position_rate"] = -TopN_oi_rate_series.loc["short_position_rate"]
-                TopN_oi_rate_series.loc["net_position_rate"] = TopN_oi_rate_series["long_potion_rate"] + TopN_oi_rate_series["short_position_rate"]
-                TopN_oi_rate_series.name = cmt
-            
-                if len(tmp_oi_rank_d) == 0:
-                    long_1d = np.nan
-                    short_1d = np.nan
-                else:            
-                    long_1d = TopN_oi_rate_series["long_potion_rate"] / tmp_oi_rank_d.loc[1,"long_potion_rate"] - 1
-                    short_1d = -TopN_oi_rate_series["short_position_rate"] / tmp_oi_rank_d.loc[1,"short_position_rate"] - 1
-                if len(tmp_oi_rank_w) == 0:
-                    long_1w = np.nan
-                    short_1w = np.nan
-                else:                
-                    long_1w = TopN_oi_rate_series["long_potion_rate"] / tmp_oi_rank_w.loc[1,"long_potion_rate"] - 1
-                    short_1w = -TopN_oi_rate_series["short_position_rate"] / tmp_oi_rank_w.loc[1,"short_position_rate"] - 1
-                if len(tmp_oi_rank_m) == 0:
-                    long_1m = np.nan
-                    short_1m = np.nan
-                else:
-                    long_1m = TopN_oi_rate_series["long_potion_rate"] / tmp_oi_rank_m.loc[1,"long_potion_rate"] - 1
-                    short_1m = -TopN_oi_rate_series["short_position_rate"] / tmp_oi_rank_m.loc[1,"short_position_rate"] - 1
-            
-            
-
-                
-            rate_pchg_series = pd.Series([long_1d,long_1w,long_1m,short_1d,short_1w,short_1m],index=
-                                         ["long_1d","long_1w","long_1m","short_1d","short_1w","short_1m"],name=cmt)
-            
-            del tmp_vol,tmp_oi,tmp_oi_rank,tmp_oi_rank_d,tmp_oi_rank_w,tmp_oi_rank_m
             vol_series_list.append(main_cnt_vol)
             oi_series_list.append(main_cnt_oi)
             TopN_oi_series_list.append(TopN_oi_rate_series)

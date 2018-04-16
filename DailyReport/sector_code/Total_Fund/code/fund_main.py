@@ -6,7 +6,7 @@ Created on Tue Jan 16 14:01:52 2018
 """
 import pandas as pd
 from contract_code import contract_code
-from CV_Compute import CV_Compute
+from CV_Compute import CV_Compute,CV_Compute_local
 from plotCV import plotCV_sector,plotCV_sector_one_graph,plotCV_all,plot_chg_sector
 from WindPy import w 
 w.start()
@@ -19,7 +19,31 @@ gld_cmt = ['AU','AG']
 all_cmt = agri_cmt + chem_cmt + fmt_cmt + nfmt_cmt + gld_cmt
 cmt_dict = {"agri_cmt":agri_cmt, "chem_cmt":chem_cmt, "fmt_cmt":fmt_cmt, "nfmt_cmt":nfmt_cmt,
             "gld_cmt":gld_cmt, "all_cmt":all_cmt}
-
+commodities={
+    'DCE':['A','C','CS','M','Y','P','JD','L','PP','V','J','JM','I'],
+    'CZC':['CF','SR','OI','RM','TA','FG','MA','ZC','AP'],
+    'SHF':['CU','ZN','AL','NI','AU','AG','BU','RU','HC','RB','SN'],
+    'CFE':['IC','IH','IF','T','TF'],
+    'INE':['SC'],
+    'ALL':['A','C','CS','M','Y','P','JD','L','PP','V','J','JM','I',
+           'CF','SR','OI','RM','TA','FG','MA','ZC','CU','ZN','AL',
+           'NI','AU','AG','SN','BU','RU','HC','RB','IC','IH','IF','T','TF']}
+    
+def variety_code(cmt):
+    """
+    将品种名称变成交易所品种编码，如A变为A.DCE。根据上面的字典添加交易所后缀
+    """
+    if cmt in commodities['DCE']:
+        return cmt + '.DCE'
+    elif cmt in commodities['CZC']:
+        return cmt + '.CZC'
+    elif cmt in commodities['SHF']:
+        return cmt + '.SHF'
+    elif cmt in commodities['CFE']:
+        return cmt + '.CFE'
+    else:
+        return cmt + '.INE'
+    
 filename_sector = "ContractValue.csv"
 
 def fund_main(start_date,end_date,cmt_list):
@@ -37,6 +61,20 @@ def fund_main(start_date,end_date,cmt_list):
     fig_allcmt = plotCV_all(Contract_Value_allcmt)
     return [fig_sector,fig_allcmt]
 
+
+def fund_main_local(start_date,end_date,cmt_list,relative_data_path):   
+    #根据下载的合约列表在所给时间段中每日下载持仓量、收盘价和乘数并计算合约价值，并存入csv文件中
+    all_cmt_list = [variety_code(x) for x in all_cmt]
+    Contract_Value_sector, Contract_Value_allcmt = CV_Compute_local(start_date,end_date,cmt_dict,all_cmt_list,
+                                                                    relative_data_path)
+    cmt_list.index = [x[:-4] for x in cmt_list.index.tolist()]
+    Contract_Value_allcmt.columns = cmt_list.loc[Contract_Value_allcmt.columns.tolist(),:]["Chinese"].tolist()    
+    #画总合约价值和版块合约价值图（2*3 subplots）并存储
+    fig_sector = plotCV_sector(Contract_Value_sector)
+    
+    #画所有品种资金沉淀
+    fig_allcmt = plotCV_all(Contract_Value_allcmt)
+    return [fig_sector,fig_allcmt]
 
 def fund_main_weekly(start_date,end_date,cmt_list,date_interval):
     #制作合约列表
