@@ -169,7 +169,7 @@ if __name__ == "__main__":
         #   (1)沉淀资金
         active_4 = 1
         if active_4 == 1:        
-            start_date_fund = "2018-01-02"
+            start_date_fund = "2018-01-01"
             end_date = "2018-03-30"
             date_interval = 20
             if mode == "week":
@@ -177,8 +177,8 @@ if __name__ == "__main__":
             elif mode == "one_date":
                 tmp_fig_list = fund_main_date(start_date_fund,report_date,copy.deepcopy(cmt_list))
             elif mode == "day":
-                tmp_fig_list = fund_main(start_date_fund,report_date,copy.deepcopy(cmt_list))
-#                tmp_fig_list = fund_main_local(start_date_fund,report_date,copy.deepcopy(cmt_list),relative_data_path)
+#                tmp_fig_list = fund_main(start_date_fund,report_date,copy.deepcopy(cmt_list))
+                tmp_fig_list = fund_main_local(start_date_fund,report_date,copy.deepcopy(cmt_list),relative_data_path)
             fig_list.extend(tmp_fig_list)
         
         #   (2)资金流向

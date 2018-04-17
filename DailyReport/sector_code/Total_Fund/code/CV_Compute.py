@@ -56,18 +56,18 @@ def CV_Compute(total_cnt,start_date,end_date,cmt_dict):
 
 def CV_Compute_local(start_date,end_date,cmt_dict,cmt_list,relative_data_path):
     fund_list = []
-    multi_df = pd.read_csv(relative_data_path+"/cmt_list/cmt_multiplier.csv",index_col=0)
+    multi_df = pd.read_csv(relative_data_path+"/cmt_list/cmt_profile.csv",index_col=0)
     for cmt in cmt_list:
         tmp_cl = pd.read_csv(relative_data_path+"/data_cl/"+cmt[:-4]+".csv",index_col=0,parse_dates=[0])
         tmp_oi = pd.read_csv(relative_data_path+"/data_oi/"+cmt[:-4]+".csv",index_col=0,parse_dates=[0])
         begin = datetime.strptime(start_date,"%Y-%m-%d")
         end = datetime.strptime(end_date,"%Y-%m-%d")
         effective_cl = tmp_cl[(tmp_cl.index >= begin) & ((tmp_cl.index <= end))].copy().fillna(0)
-        effective_oi = tmp_cl[(tmp_oi.index >= begin) & ((tmp_oi.index <= end))].copy().fillna(0)
+        effective_oi = tmp_oi[(tmp_oi.index >= begin) & ((tmp_oi.index <= end))].copy().fillna(0)
         fund = pd.Series(index=effective_cl.index,name=cmt)
         for i in range(len(fund)):
-            fund.iloc[i] = (effective_cl.iloc[i,:] * effective_oi.iloc[i,:]).sum()
-            fund.iloc[i] = fund.iloc[i] * multi_df.loc[cmt].values[0] / 100000000
+            fund.iloc[i] = (effective_cl.iloc[i,:] * effective_oi.iloc[i,:] ).sum()
+            fund.iloc[i] = fund.iloc[i] * multi_df.loc[cmt,"margin"] /100 * multi_df.loc[cmt,"multiplier"]/ 100000000
         fund_list.append(fund)    
     Contract_Value_allcmt = pd.concat(fund_list,axis=1)
     Contract_Value_allcmt.columns = [x[:-4] for x in Contract_Value_allcmt.columns.tolist()]
