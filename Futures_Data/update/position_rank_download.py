@@ -30,16 +30,9 @@ def position_rank_download_cmt(start_date,end_date,cmt):
     df = pd.concat([long_position,short_position,vol],axis=1)
     return df
     
-
-    
-if __name__ == "__main__":
-    start_date = "2018-04-16"
-    end_date = "2018-04-16"
-    main_cnt_df = pd.read_csv("../main_cnt/data/main_cnt_total.csv",parse_dates=[0],index_col=0)
-    cmt_list = main_cnt_df.columns.tolist()
-    cmt_list = cmt_list[10:]
-    
-    for cmt in cmt_list:
+def position_rank_update(start_date,end_date):
+    cmt_list = pd.read_csv("../cmt_list/cmt_daily_list.csv")        
+    for cmt in cmt_list.iloc[:,0].values:
         tmp_position_rank = position_rank_download_cmt(start_date,end_date,cmt)
         for name,group in tmp_position_rank.groupby(level=0):
             group.index = group.index.droplevel()
@@ -48,7 +41,12 @@ if __name__ == "__main__":
             if not os.path.exists(tmp_path):
                 os.makedirs(tmp_path)
             group.to_csv(tmp_path+"/"+cmt[:-4]+".csv",encoding="utf_8_sig")
-        print cmt + "更新完毕"
+        print cmt + "持仓排名更新完毕"
+    
+if __name__ == "__main__":
+    start_date = "2018-04-16"
+    end_date = "2018-04-16"
+    position_rank_update(start_date,end_date)
 
 
 

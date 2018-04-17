@@ -40,51 +40,49 @@ def data_download(cmt,start_date,end_date):
     tmp_update_oi = pd.concat(tmp_download_oi_list,axis=1)
     return tmp_update_cl,tmp_update_open,tmp_update_vol,tmp_update_oi
 
-last_update_date  = "2017-04-13"
-today = "2018-04-16"
-#today = datetime.today().date().strftime("%Y-%m-%d")
 
-for cmt in cmt_list:
-    try:
-        tmp_close = pd.read_csv("../data_cl/"+cmt[:-4]+".csv",parse_dates=[0],index_col=0)
-        tmp_open = pd.read_csv("../data_open/"+cmt[:-4]+".csv",parse_dates=[0],index_col=0)
-        tmp_vol = pd.read_csv("../data_vol/"+cmt[:-4]+".csv",parse_dates=[0],index_col=0)
-        tmp_oi = pd.read_csv("../data_oi/"+cmt[:-4]+".csv",parse_dates=[0],index_col=0)
-    except IOError:
-        print "没有品种历史数据:" + cmt + "，将新建文件。"
-        start_date = last_update_date
-        end_date = today
-        tmp_update_cl,tmp_update_open,tmp_update_vol,tmp_update_oi = data_download(cmt,start_date,end_date)
-        tmp_update_cl.to_csv("../data_cl/"+cmt[:-4]+".csv")
-        tmp_update_open.to_csv("../data_open/"+cmt[:-4]+".csv")
-        tmp_update_vol.to_csv("../data_vol/"+cmt[:-4]+".csv")
-        tmp_update_oi.to_csv("../data_oi/"+cmt[:-4]+".csv")
-    else:
-        start_date = (min([tmp_close.index[-1],tmp_open.index[-1],tmp_vol.index[-1],tmp_oi.index[-1]]).date() + timedelta(days=1)).strftime("%Y-%m-%d")
-        end_date = today
-        if datetime.strptime(start_date,"%Y-%m-%d") > datetime.strptime(end_date,"%Y-%m-%d"):
-            print cmt + "日期错误，无法更新"
-        else:
+def quotes_data_update(today):    
+    for cmt in cmt_list:
+        try:
+            tmp_close = pd.read_csv("../data_cl/"+cmt[:-4]+".csv",parse_dates=[0],index_col=0)
+            tmp_open = pd.read_csv("../data_open/"+cmt[:-4]+".csv",parse_dates=[0],index_col=0)
+            tmp_vol = pd.read_csv("../data_vol/"+cmt[:-4]+".csv",parse_dates=[0],index_col=0)
+            tmp_oi = pd.read_csv("../data_oi/"+cmt[:-4]+".csv",parse_dates=[0],index_col=0)
+        except IOError:
+            print "没有品种历史行情数据:" + cmt + "，将新建文件。"
+            start_date = today
+            end_date = today
             tmp_update_cl,tmp_update_open,tmp_update_vol,tmp_update_oi = data_download(cmt,start_date,end_date)
-            if len(tmp_update_cl) > 0:
-                update_cnt_list = [x for x in list(tmp_update_cl.columns.values) if x not in list(tmp_close.columns.values)]
-                new_cnt_list = list(tmp_close.columns.values)
-                new_cnt_list.extend(update_cnt_list)
-                tmp_close_new = tmp_close.append(tmp_update_cl)
-                tmp_open_new = tmp_open.append(tmp_update_open)
-                tmp_vol_new = tmp_vol.append(tmp_update_vol)
-                tmp_oi_new = tmp_oi.append(tmp_update_oi)
-                tmp_close_new = tmp_close_new[new_cnt_list]
-                tmp_open_new = tmp_open_new[new_cnt_list]
-                tmp_vol_new = tmp_vol_new[new_cnt_list]
-                tmp_oi_new = tmp_oi_new[new_cnt_list]
-                tmp_close_new.to_csv("../data_cl/"+cmt[:-4]+".csv")
-                tmp_open_new.to_csv("../data_open/"+cmt[:-4]+".csv")
-                tmp_vol_new.to_csv("../data_vol/"+cmt[:-4]+".csv")
-                tmp_oi_new.to_csv("../data_oi/"+cmt[:-4]+".csv")
-                print cmt + "更新完毕"
+            tmp_update_cl.to_csv("../data_cl/"+cmt[:-4]+".csv")
+            tmp_update_open.to_csv("../data_open/"+cmt[:-4]+".csv")
+            tmp_update_vol.to_csv("../data_vol/"+cmt[:-4]+".csv")
+            tmp_update_oi.to_csv("../data_oi/"+cmt[:-4]+".csv")
+        else:
+            start_date = (min([tmp_close.index[-1],tmp_open.index[-1],tmp_vol.index[-1],tmp_oi.index[-1]]).date() + timedelta(days=1)).strftime("%Y-%m-%d")
+            end_date = today
+            if datetime.strptime(start_date,"%Y-%m-%d") > datetime.strptime(end_date,"%Y-%m-%d"):
+                print cmt + "日期错误，无法更新行情数据"
             else:
-                print cmt + "已更新，无需更新"
+                tmp_update_cl,tmp_update_open,tmp_update_vol,tmp_update_oi = data_download(cmt,start_date,end_date)
+                if len(tmp_update_cl) > 0:
+                    update_cnt_list = [x for x in list(tmp_update_cl.columns.values) if x not in list(tmp_close.columns.values)]
+                    new_cnt_list = list(tmp_close.columns.values)
+                    new_cnt_list.extend(update_cnt_list)
+                    tmp_close_new = tmp_close.append(tmp_update_cl)
+                    tmp_open_new = tmp_open.append(tmp_update_open)
+                    tmp_vol_new = tmp_vol.append(tmp_update_vol)
+                    tmp_oi_new = tmp_oi.append(tmp_update_oi)
+                    tmp_close_new = tmp_close_new[new_cnt_list]
+                    tmp_open_new = tmp_open_new[new_cnt_list]
+                    tmp_vol_new = tmp_vol_new[new_cnt_list]
+                    tmp_oi_new = tmp_oi_new[new_cnt_list]
+                    tmp_close_new.to_csv("../data_cl/"+cmt[:-4]+".csv")
+                    tmp_open_new.to_csv("../data_open/"+cmt[:-4]+".csv")
+                    tmp_vol_new.to_csv("../data_vol/"+cmt[:-4]+".csv")
+                    tmp_oi_new.to_csv("../data_oi/"+cmt[:-4]+".csv")
+                    print cmt + "行情数据更新完毕"
+                else:
+                    print cmt + "已更新，无需更新"
     
         
         

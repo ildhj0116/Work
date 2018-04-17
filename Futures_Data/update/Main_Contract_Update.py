@@ -12,20 +12,18 @@ from WindPy import w
 import copy
 w.start()
 
-def main_cnt_update(main_cnt_df,decide_param=2):
+def main_cnt_update(today,decide_param=2):
+    main_cnt_df = pd.read_csv("../main_cnt/data/main_cnt_total.csv",parse_dates=[0],index_col=0)
     cmt_list = main_cnt_df.columns.tolist()
-    today = datetime.today()
-    if today.hour < 15:
-        today -= timedelta(days=1)
-    #若今天的日期小于等于已存在的日期，则一定是日期出现问题或不需要更新
-    if today <= main_cnt_df.index[-1]:
-        print "更新日期错误"
-        return np.nan
-    else:
+    start_date = main_cnt_df.index[-1].date() + timedelta(days=1)
+    end_date = today.date()
+    if start_date > end_date:
+        print  "主力合约更新日期错误，无法更新主力合约数据"
+    else:    
         start_date = main_cnt_df.index[-decide_param].strftime("%Y-%m-%d")
         end_date = today.strftime("%Y-%m-%d")
         main_cnt_series_list = []    
-
+    
         for cmt in cmt_list:
             cmt_data = w.wset("futurecc","startdate="+start_date+";enddate="+end_date+";wind_code="+cmt)
             cnt_data = pd.DataFrame(data=cmt_data.Data,index=cmt_data.Fields).T
@@ -42,10 +40,10 @@ def main_cnt_update(main_cnt_df,decide_param=2):
             
             
             #考虑持仓量相同的情况
-            oi_data = oi_data[True-(oi_data.max(axis=1)==0)]
-            max_count_f = lambda x: x[x==x.max()].count()
-            max_oi_count = oi_data.apply(max_count_f,axis=1)
-            print cmt+"持仓量相等情况个数%d" % len(max_oi_count[max_oi_count>1])
+    #            oi_data = oi_data[True-(oi_data.max(axis=1)==0)]
+    #            max_count_f = lambda x: x[x==x.max()].count()
+    #            max_oi_count = oi_data.apply(max_count_f,axis=1)
+    #            print cmt+"持仓量相等情况个数%d" % len(max_oi_count[max_oi_count>1])
             
             #处理数据
             #万得下载的持仓量数据有时在合约未上市或退市后仍有数据，导致之后横向比较出现错误，因此需要过滤掉无效数据
@@ -68,7 +66,7 @@ def main_cnt_update(main_cnt_df,decide_param=2):
             #
             if len(max_oi_cnt) <= decide_param:
                 print "无需更新"
-                return np.nan
+                
             else:
                 main_cnt_list = list(max_oi_cnt)
                 original_cnt = main_cnt_list[0]
@@ -116,18 +114,25 @@ def main_cnt_update(main_cnt_df,decide_param=2):
                 filter_main_cnt = pd.Series(filtered_main_cnt_list[decide_param:],index=max_oi_cnt.index[decide_param:])
                 filter_main_cnt.name = cmt
                 main_cnt_series_list.append(filter_main_cnt)
-        main_cnt_df = pd.concat(main_cnt_series_list,axis=1)
-        return main_cnt_df
+            print cmt + "主力合约数据更新完毕"
+        update_main_df = pd.concat(main_cnt_series_list,axis=1)
+        update_main_df.to_csv("../main_cnt/data/main_cnt_total.csv",mode="a",header=None)
+
         
         
         
 
 
 if __name__ == "__main__":
-    main_cnt_df = pd.read_csv("../main_cnt/data/main_cnt_total.csv",parse_dates=[0],index_col=0)
-    update_main_df = main_cnt_update(main_cnt_df)
-
-    update_main_df.to_csv("../main_cnt/data/main_cnt_total.csv",mode="a",header=None)
+    trade_date_list = pd.read_csv("../others/trade_date.csv",index_col=0,parse_dates=[0]).index.tolist()
+    today = datetime.today()
+    if today.hour < 15:
+        today -= timedelta(days=1)
+    #若今天的日期小于等于已存在的日期，则一定是日期出现问题或不需要更新
+    if today <= trade_date_list[-1]:
+        print "更新日期错误"
+    else:
+        main_cnt_update(today)
     
     
     
