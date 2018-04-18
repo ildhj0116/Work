@@ -9,6 +9,7 @@ import pandas as pd
 from WindPy import w
 from datetime import datetime,date
 import os
+
 w.start()
 
 def position_rank_download_cmt(start_date,end_date,cmt):
@@ -42,11 +43,26 @@ def position_rank_update(start_date,end_date):
                 os.makedirs(tmp_path)
             group.to_csv(tmp_path+"/"+cmt[:-4]+".csv",encoding="utf_8_sig")
         print cmt + "持仓排名更新完毕"
+        
+def position_rank_without_cmt(start_date,end_date,cmt_list):       
+    for cmt in cmt_list:
+        tmp_position_rank = position_rank_download_cmt(start_date,end_date,cmt)
+        for name,group in tmp_position_rank.groupby(level=0):
+            group.index = group.index.droplevel()
+            today = name.to_pydatetime().strftime("%Y-%m-%d")
+            tmp_path = "../position_rank/cmt/" + today
+            if not os.path.exists(tmp_path):
+                os.makedirs(tmp_path)
+            group.to_csv(tmp_path+"/"+cmt[:-4]+".csv",encoding="utf_8_sig")
+        print cmt + "持仓排名更新完毕"        
+
     
 if __name__ == "__main__":
-    start_date = "2018-04-16"
-    end_date = "2018-04-16"
-    position_rank_update(start_date,end_date)
+    cmt_list = pd.read_csv("../main_cnt/data/main_cnt_total.csv")
+    cmt_list = cmt_list.columns[:11].tolist()
+    start_date = "2015-01-01"
+    end_date = "2015-12-31"
+    position_rank_without_cmt(start_date,end_date,cmt_list)
 
 
 
