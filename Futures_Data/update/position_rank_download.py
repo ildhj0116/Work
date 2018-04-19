@@ -8,6 +8,7 @@ Created on Mon Apr 16 09:35:00 2018
 import pandas as pd
 from WindPy import w
 from datetime import datetime,date
+from WindError import *
 import os
 
 w.start()
@@ -15,6 +16,7 @@ w.start()
 def position_rank_download_cmt(start_date,end_date,cmt):
     long_position = w.wset("futureoir","startdate="+start_date+";enddate="+end_date+";varity="+cmt+";order_by=long;ranks=all;\
                            field=date,member_name,long_position,long_position_increase,long_potion_rate")
+    WindCheck(long_position)
     long_position = pd.DataFrame(long_position.Data,index=long_position.Fields).T
     short_position = w.wset("futureoir","startdate="+start_date+";enddate="+end_date+";varity="+cmt+";order_by=short;ranks=all;\
                             field=date,member_name,short_position,short_position_increase,short_position_rate")
@@ -46,22 +48,30 @@ def position_rank_update(start_date,end_date):
         
 def position_rank_without_cmt(start_date,end_date,cmt_list):       
     for cmt in cmt_list:
-        tmp_position_rank = position_rank_download_cmt(start_date,end_date,cmt)
-        for name,group in tmp_position_rank.groupby(level=0):
-            group.index = group.index.droplevel()
-            today = name.to_pydatetime().strftime("%Y-%m-%d")
-            tmp_path = "../position_rank/cmt/" + today
-            if not os.path.exists(tmp_path):
-                os.makedirs(tmp_path)
-            group.to_csv(tmp_path+"/"+cmt[:-4]+".csv",encoding="utf_8_sig")
-        print cmt + "持仓排名更新完毕"        
+        try:
+            tmp_position_rank = position_rank_download_cmt(start_date,end_date,cmt)
+        except WindError as we:
+            print cmt + " " + we.errorinfo
+            raise
+        except EmptyError as ee:
+            print cmt + ee.errorinfo
+            continue
+        else:
+            for name,group in tmp_position_rank.groupby(level=0):
+                group.index = group.index.droplevel()
+                today = name.to_pydatetime().strftime("%Y-%m-%d")
+                tmp_path = "../position_rank/cmt/" + today
+                if not os.path.exists(tmp_path):
+                    os.makedirs(tmp_path)
+                group.to_csv(tmp_path+"/"+cmt[:-4]+".csv",encoding="utf_8_sig")
+            print cmt + "持仓排名更新完毕"        
 
     
 if __name__ == "__main__":
-    cmt_list = pd.read_csv("../main_cnt/data/main_cnt_total.csv")
-    cmt_list = cmt_list.columns[:11].tolist()
-    start_date = "2015-01-01"
-    end_date = "2015-12-31"
+    cmt_list = pd.read_csv("../main_cnt/data/main_cnt_total.csv",index_col=0)
+    cmt_list = cmt_list.columns.tolist()
+    start_date = "2014-01-01"
+    end_date = "2014-12-31"
     position_rank_without_cmt(start_date,end_date,cmt_list)
 
 

@@ -99,7 +99,7 @@ if __name__ == "__main__":
     cmt_list.drop(["IC.CFE","IF.CFE","IH.CFE","T.CFE","TF.CFE"],inplace=True)
 #    cmt_list = pd.DataFrame({"cmt":{"IC.CFE":"IC"}})
     main_cnt_df = pd.read_csv("../Futures_Data/main_cnt/data/main_cnt_total.csv",parse_dates=[0],index_col=0)
-    report_date = "2018-04-18"
+    report_date = "2018-04-19"
     mode = "day"
     #mode = "day"
     
@@ -130,7 +130,7 @@ if __name__ == "__main__":
         #   (2)半年内南华商品指数收益率折线图
 
         #   (3)各品种日、月、周收益率排名
-        active_1 = 0
+        active_1 = 1
         if active_1 == 1:
             start_date = "2018-01-02"
             end_date = "2018-03-30"
@@ -145,7 +145,7 @@ if __name__ == "__main__":
 
         
         # 2、波动率提示：品种日振幅
-        active_2 = 0
+        active_2 = 1
         if active_2 == 1:
             if mode == "day":
                 N_list = [1]
@@ -158,7 +158,7 @@ if __name__ == "__main__":
                 fig_list.extend(tmp_fig_list)
 
         # 3、持仓、成交提示
-        active_3 = 0
+        active_3 = 1
         if active_3 == 1:        
             if mode == "day":
                 tmp_fig_list,tmp_head_df,tmp_tail_df = vol_oi_indicator(main_cnt_list_today,cmt_list,report_date,relative_data_path)
@@ -168,7 +168,7 @@ if __name__ == "__main__":
 
         # 4、资金提示
         #   (1)沉淀资金
-        active_4 = 0
+        active_4 = 1
         if active_4 == 1:        
             start_date_fund = "2018-01-01"
             end_date = "2018-03-30"
@@ -183,7 +183,7 @@ if __name__ == "__main__":
             fig_list.extend(tmp_fig_list)
         
         #   (2)资金流向
-        active_5 = 0
+        active_5 = 1
         if active_5 == 1:
             top_N = 2
             start_date = "2018-01-02"
@@ -214,7 +214,7 @@ if __name__ == "__main__":
         
         
         # 输出
-        active_output = 0
+        active_output = 1
         if active_output == 1:
             output(mode,report_date,fig_list,title_list,head_df,tail_df)
         

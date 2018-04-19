@@ -36,7 +36,7 @@ def Main_Contract(cmt_list, start_date, end_date, decide_param = 2):
             
             
             #考虑持仓量相同的情况
-            oi_data = oi_data[True-(oi_data.max(axis=1)==0)]
+            oi_data = oi_data[~(oi_data.max(axis=1)==0)]
             max_count_f = lambda x: x[x==x.max()].count()
             max_oi_count = oi_data.apply(max_count_f,axis=1)
             print cmt+"持仓量相等情况个数%d" % len(max_oi_count[max_oi_count>1])
