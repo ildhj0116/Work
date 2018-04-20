@@ -18,7 +18,7 @@ if __name__ == "__main__":
     today = datetime.today()
     if today.hour < 15:
         today -= timedelta(days=1)
-    #若今天的日期小于等于已存在的日期，则一定是日期出现问题或不需要更新
+    # 若今天的日期小于等于已存在的日期，则一定是日期出现问题或不需要更新
     if today <= trade_date_list[-1]:
         print "更新日期错误"
     else:
@@ -29,4 +29,4 @@ if __name__ == "__main__":
         main_cnt_update(today)
         position_rank_update(today_str,today_str)
 
-    
+
