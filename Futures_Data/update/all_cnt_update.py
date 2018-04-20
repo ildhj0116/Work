@@ -72,6 +72,9 @@ def quotes_data_update(today):
                     tmp_open_new = tmp_open.append(tmp_update_open)
                     tmp_vol_new = tmp_vol.append(tmp_update_vol)
                     tmp_oi_new = tmp_oi.append(tmp_update_oi)
+                    if cmt in ["IC.CFE","IF.CFE","IH.CFE"]:
+                        his_cnt_list = pd.read_csv("../cnt_list/"+cmt[:-4]+".csv",index_col=0).index.tolist()
+                        new_cnt_list = [x for x in his_cnt_list if x in new_cnt_list]
                     tmp_close_new = tmp_close_new[new_cnt_list]
                     tmp_open_new = tmp_open_new[new_cnt_list]
                     tmp_vol_new = tmp_vol_new[new_cnt_list]
