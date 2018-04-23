@@ -14,7 +14,7 @@ def color_setting(ret):
     return colors
     
 
-def cmt_ret_rank(main_cnt_list_today,cmt_list,relative_data_path):
+def cmt_ret_rank(main_cnt_list_today,cmt_list,relative_data_path,report_date):
     cl_series_list = []
     fig_list = []
     for cmt in cmt_list.index.tolist():
@@ -25,13 +25,13 @@ def cmt_ret_rank(main_cnt_list_today,cmt_list,relative_data_path):
         del tmp_cl
         cl_series_list.append(main_cnt_cl)
     cl_df = pd.concat(cl_series_list,axis=1)
-    ret_d = ((cl_df - cl_df.shift(1)) / cl_df.shift(1)).iloc[-1,:]
+    ret_d = ((cl_df - cl_df.shift(1)) / cl_df.shift(1)).loc[report_date,:]
     ret_d.name = "daily_ret"
     ret_d.index = cmt_list.loc[ret_d.index.tolist(),:]["Chinese"].tolist()
-    ret_w = ((cl_df - cl_df.shift(5)) / cl_df.shift(5)).iloc[-1,:]
+    ret_w = ((cl_df - cl_df.shift(5)) / cl_df.shift(5)).loc[report_date,:]
     ret_w.name = "weekly_ret"
     ret_w.index = cmt_list.loc[ret_w.index.tolist(),:]["Chinese"].tolist()
-    ret_m = ((cl_df - cl_df.shift(20)) / cl_df.shift(20)).iloc[-1,:]
+    ret_m = ((cl_df - cl_df.shift(20)) / cl_df.shift(20)).loc[report_date,:]
     ret_m.name = "monthly_ret"
     ret_m.index = cmt_list.loc[ret_m.index.tolist(),:]["Chinese"].tolist()
     ret_d.sort_values(ascending=False,inplace=True)

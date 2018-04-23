@@ -89,7 +89,11 @@ def output(mode,report_date,fig_list,title_list,head_df,tail_df):
            # inter_5_tail = list(set(tail_5_list[0]).intersection(*tail_5_list[1:]))
   
             stat_df.to_csv("output/One_Date/" + report_date + '/' + "stat.csv",encoding="utf_8_sig")
-                
+
+
+def delete_fig(figure_list):
+    for fig in figure_list:
+        plt.close(fig)
 
 if __name__ == "__main__":
     
@@ -114,7 +118,8 @@ if __name__ == "__main__":
         title_list = ([u"品种季度收益",u"板块沉淀资金",u"季度资金流向变化率", u"季度总资金流向",u"季度主动资金流向",u"季度被动资金流向"])
 
     report_date_list = pd.read_csv("../Futures_Data/others/trade_date.csv",index_col=0).index.tolist()
-    for report_date in [report_date_list[-1]]:
+    report_date_list = report_date_list[-10:-5]
+    for report_date in report_date_list:
         # report_date = "2018-04-16"
         report_date_time = datetime.strptime(report_date,"%Y-%m-%d")
 
@@ -141,7 +146,7 @@ if __name__ == "__main__":
                     tmp_fig_list,tmp_head_df,tmp_tail_df = cmt_ret_rank_date(main_cnt_list_today,cmt_list,relative_data_path,
                                                                              start_date,end_date)
                 else:
-                    tmp_fig_list,tmp_head_df,tmp_tail_df = cmt_ret_rank(main_cnt_list_today,cmt_list,relative_data_path)
+                    tmp_fig_list,tmp_head_df,tmp_tail_df = cmt_ret_rank(main_cnt_list_today,cmt_list,relative_data_path,report_date)
                 head_df = pd.concat([head_df,tmp_head_df],axis=1)
                 tail_df = pd.concat([tail_df,tmp_tail_df],axis=1)
                 fig_list.extend(tmp_fig_list)
@@ -219,10 +224,10 @@ if __name__ == "__main__":
             active_output = 1
             if active_output == 1:
                 output(mode,report_date,fig_list,title_list,head_df,tail_df)
-
+                delete_fig(fig_list)
 
             #报告生成
-            active_report = 1
+            active_report = 0
             if active_report == 1:
                 head_df = pd.read_csv("output/Daily/" + report_date + '/' + "head.csv",encoding="utf_8_sig",index_col=0)
                 tail_df = pd.read_csv("output/Daily/" + report_date + '/' + "tail.csv",encoding="utf_8_sig",index_col=0)
@@ -233,6 +238,6 @@ if __name__ == "__main__":
                 path = "sector_code/Report_Generation/"
                 Report_Generation(report_date,head_value_list,tail_value_list,title_list,path)
         
-        
+        print report_date + "量化日报生成完毕"
         
         
