@@ -118,7 +118,7 @@ if __name__ == "__main__":
         title_list = ([u"品种季度收益",u"板块沉淀资金",u"季度资金流向变化率", u"季度总资金流向",u"季度主动资金流向",u"季度被动资金流向"])
 
     report_date_list = pd.read_csv("../Futures_Data/others/trade_date.csv",index_col=0).index.tolist()
-    report_date_list = report_date_list[-10:-5]
+    report_date_list = [report_date_list[-1]]
     for report_date in report_date_list:
         # report_date = "2018-04-16"
         report_date_time = datetime.strptime(report_date,"%Y-%m-%d")
@@ -227,7 +227,7 @@ if __name__ == "__main__":
                 delete_fig(fig_list)
 
             #报告生成
-            active_report = 0
+            active_report = 1
             if active_report == 1:
                 head_df = pd.read_csv("output/Daily/" + report_date + '/' + "head.csv",encoding="utf_8_sig",index_col=0)
                 tail_df = pd.read_csv("output/Daily/" + report_date + '/' + "tail.csv",encoding="utf_8_sig",index_col=0)
