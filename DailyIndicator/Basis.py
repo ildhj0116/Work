@@ -43,7 +43,9 @@ dic_cmt_chinese = {
             u"沪深300":"IF.CFE"
         }
 
-def Basis_Rate(spot,tdate,main_cnt_df):
+def Basis_Rate(tdate,main_cnt_df):
+    spot = pd.read_excel("../Simulation_Trade/Basis/Basis_Table/"+tdate+".xlsm",sheetname=u"手动输入表",usecols=[1,3])    
+    spot.index = [dic_cmt_chinese[x] for x in spot[u"品种"] if x in dic_cmt_chinese.keys()]
     cnt_list = []
     basis_rate_list = []
     tdate = datetime.strptime(tdate,"%Y-%m-%d")
@@ -58,15 +60,13 @@ def Basis_Rate(spot,tdate,main_cnt_df):
             basis_rate = float(spot.loc[cmt,u"收盘现货"]) / main_cl - 1
             cnt_list.append(main_cnt[:-4])
             basis_rate_list.append(basis_rate)
-    basis_rate_series = pd.Series(basis_rate_list,index=cnt_list,name=u"贴水率").sort_values()
+    basis_rate_series = pd.Series(basis_rate_list,index=cnt_list,name=u"基差贴水率").sort_values()
     return basis_rate_series
 
 if __name__ == "__main__":
     main_cnt_df = pd.read_csv("../Futures_data/main_cnt/data/main_cnt_total.csv",index_col=0,parse_dates=[0])
     tdate = "2018-04-23"
-    spot = pd.read_excel("../Simulation_Trade/Basis/Basis_Table/"+tdate+".xlsm",sheetname=u"手动输入表",usecols=[1,3])    
-    spot.index = [dic_cmt_chinese[x] for x in spot[u"品种"] if x in dic_cmt_chinese.keys()]
-    basis_rate_series = Basis_Rate(spot,tdate,main_cnt_df)
+    basis_rate_series = Basis_Rate(tdate,main_cnt_df)
     
     
     

@@ -36,27 +36,11 @@ def position_rank_download_cmt(start_date,end_date,cmt):
 def position_rank_update(start_date,end_date):
     cmt_list = pd.read_csv("../cmt_list/cmt_daily_list.csv")        
     for cmt in cmt_list.iloc[:,0].values:
-        tmp_position_rank = position_rank_download_cmt(start_date,end_date,cmt)
-        for name,group in tmp_position_rank.groupby(level=0):
-            group.index = group.index.droplevel()
-            today = name.to_pydatetime().strftime("%Y-%m-%d")
-            tmp_path = "../position_rank/cmt/" + today
-            if not os.path.exists(tmp_path):
-                os.makedirs(tmp_path)
-            group.to_csv(tmp_path+"/"+cmt[:-4]+".csv",encoding="utf_8_sig")
-        print cmt + "持仓排名更新完毕"
-        
-def position_rank_without_cmt(start_date,end_date,cmt_list):       
-    for cmt in cmt_list:
-        try:
-            tmp_position_rank = position_rank_download_cmt(start_date,end_date,cmt)
-        except WindError as we:
-            print cmt + " " + we.errorinfo
-            raise
-        except EmptyError as ee:
-            print cmt + ee.errorinfo
+        print cmt
+        if cmt in ["WR.SHF","FU.SHF","IC.CFE","IF.CFE","IH.CFE","T.CFE","TF.CFE"]:
             continue
         else:
+            tmp_position_rank = position_rank_download_cmt(start_date,end_date,cmt)
             for name,group in tmp_position_rank.groupby(level=0):
                 group.index = group.index.droplevel()
                 today = name.to_pydatetime().strftime("%Y-%m-%d")
@@ -64,7 +48,31 @@ def position_rank_without_cmt(start_date,end_date,cmt_list):
                 if not os.path.exists(tmp_path):
                     os.makedirs(tmp_path)
                 group.to_csv(tmp_path+"/"+cmt[:-4]+".csv",encoding="utf_8_sig")
-            print cmt + "持仓排名更新完毕"        
+            print cmt + "持仓排名更新完毕"
+        
+def position_rank_without_cmt(start_date,end_date,cmt_list):       
+    for cmt in cmt_list:
+        print cmt
+        if cmt in []:
+            continue
+        else:
+            try:
+                tmp_position_rank = position_rank_download_cmt(start_date,end_date,cmt)
+            except WindError as we:
+                print cmt + " " + we.errorinfo
+                raise
+            except EmptyError as ee:
+                print cmt + ee.errorinfo
+                continue
+            else:
+                for name,group in tmp_position_rank.groupby(level=0):
+                    group.index = group.index.droplevel()
+                    today = name.to_pydatetime().strftime("%Y-%m-%d")
+                    tmp_path = "../position_rank/cmt/" + today
+                    if not os.path.exists(tmp_path):
+                        os.makedirs(tmp_path)
+                    group.to_csv(tmp_path+"/"+cmt[:-4]+".csv",encoding="utf_8_sig")
+                print cmt + "持仓排名更新完毕"        
 
     
 if __name__ == "__main__":

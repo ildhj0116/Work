@@ -21,7 +21,7 @@ def TriMA2Trend(ma_price):
             return 'Short_1'
         elif ma_price["ma_s"] > ma_price["ma_m"] and ma_price['close'] < ma_price["ma_s"]:
             return 'Short_2'
-    return "None"
+    return "Null"
 
 def TriTrend(tdate,ma_param_df,main_cnt_df):
     cmt_list = main_cnt_df.columns.tolist()
@@ -51,7 +51,7 @@ if __name__ == "__main__":
     ma_param_df = pd.read_csv("parmt.csv",index_col=0)
     main_cnt_df = pd.read_csv("../Futures_data/main_cnt/data/main_cnt_total.csv",index_col=0,parse_dates=[0])
     tdate = "2018-04-23"
-    trend = TriTrend(tdate,ma_param_df,main_cnt_df).sort_values()
+    trend = TriTrend(tdate,ma_param_df,main_cnt_df)
     
     
     
