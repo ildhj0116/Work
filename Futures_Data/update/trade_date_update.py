@@ -27,5 +27,5 @@ def trade_date_update(today):
         print "交易日列表更新完毕"
 #        trade_date
 if __name__ == "__main__":
-    today = "2018-04-20"
+    today = "2018-04-26"
     trade_date_update(today)

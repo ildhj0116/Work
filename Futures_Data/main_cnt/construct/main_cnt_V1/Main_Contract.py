@@ -109,7 +109,7 @@ def Main_Contract(cmt_list, start_date, end_date, decide_param = 2):
     
 commodities={
 'DCE':['A','C','CS','M','Y','P','JD','L','PP','V','J','JM','I'],
-'CZC':['CF','SR','RM','TA','FG','MA','ZC'],
+'CZC':['CF','SR','RM','TA','FG','MA','ZC','AP'],
 'SHF':['CU','ZN','AL','NI','AU','AG','BU','RU','HC','RB'],
 'CFE':['IC','IH','IF','T','TF'],
 'ALL':['A','C','CS','M','Y','P','JD','L','PP','V','J','JM','I',
@@ -129,11 +129,14 @@ def exchange(cmt):
         
 if __name__ == "__main__":
     cnt_list = commodities['ALL']
-    base_date = "1999-12-31"
-    end_date = "2009-12-30"    
+    base_date = "2017-12-20"
+    end_date = "2018-04-25"    
     cmt_list = [exchange(x) for x in cnt_list]
-    #cmt_list = ["IF.CFE"]
+    cmt_list = ["AP.CZC"]
     main_cnt_df = Main_Contract(cmt_list,base_date,end_date)
+    main = pd.read_csv("../../data/main_cnt_total.csv",index_col=0,parse_dates=[0])
+    main1 = pd.concat([main,main_cnt_df],axis=1)
+    
     #main_cnt_df.to_csv("main_cnt_MA.csv")
 
 

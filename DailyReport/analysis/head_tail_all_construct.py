@@ -24,11 +24,11 @@ def adding_ret(df,cmt_list_chinese,tommorrow):
     df.columns = pd.MultiIndex.from_tuples(list(zip(col,col1)))
     new_columns = []
     for item in col:
-        df.loc[:,(item,"ret")] = [0]*5
+        df[(item,"ret")] = [0]*5
         tmp_cmt = df.loc[:,(item,"cmt")].tolist() 
         for i in range(len(tmp_cmt)):
             cmt_e = cmt_list_chinese.loc[tmp_cmt[i]].iloc[0]
-            df.loc[:,(item,"ret")].iloc[i] = ret_tommorrow(df.index[0],cmt_e,tommorrow)
+            df[(item,"ret")].iloc[i] = ret_tommorrow(df.index[0],cmt_e,tommorrow)
         new_columns.extend([(item,"cmt"),(item,"ret")])
     df = df[new_columns]
     return df

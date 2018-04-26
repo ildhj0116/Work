@@ -32,7 +32,7 @@ def hr_cross(cnt,end,preday):
     #设置不同品种的小时线出场信号
     cmt=Cnt2Cmt(cnt)
     if cmt in ['TA']:      # 这些品种还是按长一点的小时均线
-        df.loc[df['h5']>df['h60'],'hm_exit']=1
+        df.loc[df['h5']>=df['h60'],'hm_exit']=1
     elif cmt in ['IH','IC','IF']:
         df.loc[df['close']>df['h20'],'hm_exit']=1
     else:
@@ -90,7 +90,7 @@ def Hour_Trend(tdate,pre_tdate,main_cnt_df):
 if __name__ == "__main__":
     main_cnt_df = pd.read_csv("../Futures_data/main_cnt/data/main_cnt_total.csv",index_col=0,parse_dates=[0])
     tdate_series = pd.read_csv("../Futures_data/others/trade_date.csv",index_col=0)
-    tdate = "2018-04-23"
+    tdate = "2018-04-26"
     pre_tdate = tdate_series.loc[:tdate].index[-2]    
     h_trend = Hour_Trend(tdate,pre_tdate,main_cnt_df)
 

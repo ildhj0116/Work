@@ -23,10 +23,11 @@ def standarlize(series):
 if __name__ == "__main__":
     ma_param_df = pd.read_csv("parmt.csv",index_col=0)
     main_cnt_df = pd.read_csv("../Futures_data/main_cnt/data/main_cnt_total.csv",index_col=0,parse_dates=[0])
+    main_cnt_df.drop(["AU.SHF","AG.SHF","AP.CZC"],axis=1,inplace=True)
     tdate_series = pd.read_csv("../Futures_data/others/trade_date.csv",index_col=0)
-    tdate = "2018-04-25"
+    tdate = "2018-04-26"
     pre_tdate = tdate_series.loc[:tdate].index[-2]
-    
+#    
     trend = TriTrend(tdate,ma_param_df,main_cnt_df).sort_values()
     h_trend = Hour_Trend(tdate,pre_tdate,main_cnt_df)
     basis_rate_series = Basis_Rate(tdate,main_cnt_df)    

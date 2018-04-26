@@ -64,7 +64,8 @@ def main_cnt_update(today,decide_param=2):
             max_oi_cnt = oi_data.apply(max_oi_cnt_f,axis=1)
             
             #
-            if len(max_oi_cnt) <= decide_param:
+#            if len(max_oi_cnt) <= decide_param:
+            if False:
                 print "无需更新"
                 
             else:

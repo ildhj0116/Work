@@ -78,8 +78,9 @@ def position_rank_without_cmt(start_date,end_date,cmt_list):
 if __name__ == "__main__":
     cmt_list = pd.read_csv("../main_cnt/data/main_cnt_total.csv",index_col=0)
     cmt_list = cmt_list.columns.tolist()
-    start_date = "2014-01-01"
-    end_date = "2014-12-31"
+    cmt_list = ["AP.CZC"]
+    start_date = "2018-01-01"
+    end_date = "2018-04-26"
     position_rank_without_cmt(start_date,end_date,cmt_list)
 
 

@@ -50,6 +50,8 @@ for cmt in cmt_list:
         tmp_open = pd.read_csv("../data_open/"+cmt[:-4]+".csv",parse_dates=[0],index_col=0)
         tmp_vol = pd.read_csv("../data_vol/"+cmt[:-4]+".csv",parse_dates=[0],index_col=0)
         tmp_oi = pd.read_csv("../data_oi/"+cmt[:-4]+".csv",parse_dates=[0],index_col=0)
+        tmp_high = pd.read_csv("../data_high/"+cmt[:-4]+".csv",parse_dates=[0],index_col=0)
+        tmp_low = pd.read_csv("../data_low/"+cmt[:-4]+".csv",parse_dates=[0],index_col=0)
     except IOError:
         print "没有品种历史数据:" + cmt + "，将新建文件。"        
     else: 
@@ -58,13 +60,29 @@ for cmt in cmt_list:
 #        tmp_open_new = tmp_open.iloc[:-1,:].copy()
 #        tmp_vol_new = tmp_vol.iloc[:-1,:].copy()
 #        tmp_oi_new = tmp_oi.iloc[:-1,:].copy()
+#        tmp_high_new = tmp_high.iloc[:-1,:].copy()
+#        tmp_low_new = tmp_low.iloc[:-1,:].copy()     
+        
         # 删除最后一列
-        tmp_close_new = tmp_close.iloc[:,:-1].copy()
-        tmp_open_new = tmp_open.iloc[:,:-1].copy()
-        tmp_vol_new = tmp_vol.iloc[:,:-1].copy()
-        tmp_oi_new = tmp_oi.iloc[:,:-1].copy()
+#        tmp_close_new = tmp_close.iloc[:,:-1].copy()
+#        tmp_open_new = tmp_open.iloc[:,:-1].copy()
+#        tmp_vol_new = tmp_vol.iloc[:,:-1].copy()
+#        tmp_oi_new = tmp_oi.iloc[:,:-1].copy()
+#        tmp_high_new = tmp_high.iloc[:,:-1].copy()
+#        tmp_low_new = tmp_low.iloc[:,:-1].copy()
+        
+        # 删除全部为空的行
+#        tmp_close_new = tmp_close[~tmp_close.isnull().all(axis=1)]
+#        tmp_open_new = tmp_open[~tmp_open.isnull().all(axis=1)]
+#        tmp_vol_new = tmp_vol[~tmp_vol.isnull().all(axis=1)]
+#        tmp_oi_new = tmp_oi[~tmp_oi.isnull().all(axis=1)]
+#        tmp_high_new = tmp_high[~tmp_high.isnull().all(axis=1)]
+#        tmp_low_new = tmp_low[~tmp_low.isnull().all(axis=1)]
+        
         tmp_close_new.to_csv("../data_cl/"+cmt[:-4]+".csv")
         tmp_open_new.to_csv("../data_open/"+cmt[:-4]+".csv")
         tmp_vol_new.to_csv("../data_vol/"+cmt[:-4]+".csv")
         tmp_oi_new.to_csv("../data_oi/"+cmt[:-4]+".csv")
+        tmp_high_new.to_csv("../data_high/"+cmt[:-4]+".csv")
+        tmp_low_new.to_csv("../data_low/"+cmt[:-4]+".csv")
         print cmt + "删除完毕"

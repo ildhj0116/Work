@@ -14,7 +14,7 @@ w.start()
 
 cmt_list = pd.read_csv("../cmt_list/cmt_list.csv")
 cmt_list = cmt_list["cmt"].tolist()
-#cmt_list = ["SN.SHF"]
+#cmt_list = ["AP.CZC"]
 
 def data_download(cmt,start_date,end_date):
     tmp_cnt_list = w.wset("futurecc","startdate="+start_date+";enddate="+end_date+";wind_code="+cmt+";field=wind_code")
@@ -44,8 +44,8 @@ def data_download(cmt,start_date,end_date):
     tmp_update_open = pd.concat(tmp_download_open_list,axis=1)
     tmp_update_vol = pd.concat(tmp_download_vol_list,axis=1)
     tmp_update_oi = pd.concat(tmp_download_oi_list,axis=1)
-    tmp_update_high = pd.concat(tmp_download_vol_list,axis=1)
-    tmp_update_low = pd.concat(tmp_download_oi_list,axis=1)
+    tmp_update_high = pd.concat(tmp_download_high_list,axis=1)
+    tmp_update_low = pd.concat(tmp_download_low_list,axis=1)
     return tmp_update_cl,tmp_update_open,tmp_update_vol,tmp_update_oi,tmp_update_high,tmp_update_low
 
 
@@ -60,7 +60,7 @@ def quotes_data_update(today):
             tmp_low = pd.read_csv("../data_low/"+cmt[:-4]+".csv",parse_dates=[0],index_col=0)
         except IOError:
             print "没有品种历史行情数据:" + cmt + "，将新建文件。"
-            start_date = today
+            start_date = "2017-12-20"
             end_date = today
             tmp_update_cl,tmp_update_open,tmp_update_vol,tmp_update_oi,tmp_update_high,tmp_update_low = data_download(cmt,start_date,
                                                                                                                       end_date)
@@ -139,9 +139,9 @@ def high_low_download(start_date,end_date):
 
 if __name__ == "__main__":
     start_date = "2015-01-01"
-    end_date = "2018-04-24"
-    high_low_download(start_date,end_date)
-        
+    end_date = "2018-04-25"
+#    high_low_download(start_date,end_date)
+    quotes_data_update(end_date)
         
         
         

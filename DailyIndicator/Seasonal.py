@@ -42,7 +42,7 @@ def Seasonal_Winning_Rate(main_cnt_df,tdate):
 
 if __name__ == "__main__":
     main_cnt_df = pd.read_csv("../Futures_data/main_cnt/data/main_cnt_total.csv",index_col=0,parse_dates=[0])
-    tdate = "2018-04-23"
+    tdate = "2018-04-26"
     seasonal_winrate = Seasonal_Winning_Rate(main_cnt_df,tdate)
     
     

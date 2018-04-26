@@ -111,7 +111,7 @@ def Deviation(tdate,main_cnt_df,trend):
 if __name__ == "__main__":
     ma_param_df = pd.read_csv("parmt.csv",index_col=0)
     main_cnt_df = pd.read_csv("../Futures_data/main_cnt/data/main_cnt_total.csv",index_col=0,parse_dates=[0])
-    tdate = "2018-04-24"
+    tdate = "2018-04-25"
     trend = TriTrend(tdate,ma_param_df,main_cnt_df)
     deviation_df = Deviation(tdate,main_cnt_df,trend)
     

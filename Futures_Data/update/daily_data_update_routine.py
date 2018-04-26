@@ -23,10 +23,10 @@ if __name__ == "__main__":
         print "更新日期错误"
     else:
         today_str = today.strftime("%Y-%m-%d")        
-        trade_date_update(today_str)
-        cnt_list_download(today_str)
-        quotes_data_update(today_str)
-        main_cnt_update(today)
+#        trade_date_update(today_str)
+#        cnt_list_download(today_str)
+#        quotes_data_update(today_str)
+#        main_cnt_update(today)
         position_rank_update(today_str,today_str)
 
 
